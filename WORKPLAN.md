@@ -4,7 +4,8 @@
 - [x] Initial Project Structure
 - [x] CI/CD & Docker Setup
 - [x] Agent Skills & Workflows (Stubs)
-- [ ] Backend Health & Baseline (Functional)
+- [x] Backend Health & Baseline (Functional)
+- [x] Frontend Minimalistic UI (React/Tailwind)
 
 ## Phase 2: Ingestion & Financial Data (Day 1 Morning)
 - [ ] Ticker Identification & Meta-data enrichment.
@@ -26,3 +27,8 @@
 - [ ] Demo Video Recording.
 - [ ] README Documentation Finalization.
 - [ ] One-page write-up.
+
+---
+
+## 🚀 Optional: Production Cloud Deployment
+- [ ] Implement [deployment_plan.md](deployment_plan.md) (Vercel + Render + Upstash).
