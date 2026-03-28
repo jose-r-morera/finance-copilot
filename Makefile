@@ -53,25 +53,45 @@ logs:
 
 # --- Quality -----------------------------------------------------------------
 
-## test: Run the full test suite
+## test: Run the full test suite (local)
 test:
 	$(PYTHON) -m pytest backend/tests/ -v --tb=short
 
-## lint: Run ruff linter
+## docker-test: Run the full test suite inside Docker
+docker-test:
+	$(COMPOSE) run --rm backend pytest backend/tests/ -v --tb=short
+
+## lint: Run ruff linter (local)
 lint:
 	$(PYTHON) -m ruff check .
 
-## format: Auto-format code with ruff
+## docker-lint: Run ruff linter inside Docker
+docker-lint:
+	$(COMPOSE) run --rm backend ruff check .
+
+## format: Auto-format code with ruff (local)
 format:
 	$(PYTHON) -m ruff format .
 	$(PYTHON) -m ruff check . --fix
 
-## typecheck: Run mypy static type checker
+## docker-format: Auto-format code with ruff inside Docker
+docker-format:
+	$(COMPOSE) run --rm backend ruff format .
+	$(COMPOSE) run --rm backend ruff check . --fix
+
+## typecheck: Run mypy static type checker (local)
 typecheck:
 	$(PYTHON) -m mypy backend/
 
-## check: Run lint + typecheck (used in CI)
-check: lint typecheck
+## docker-typecheck: Run mypy static type checker inside Docker
+docker-typecheck:
+	$(COMPOSE) run --rm backend mypy backend/
+
+## check: Run all quality checks (local)
+check: lint typecheck test
+
+## docker-check: Run all quality checks inside Docker
+docker-check: docker-lint docker-typecheck docker-test
 
 # --- Build -------------------------------------------------------------------
 

@@ -9,11 +9,11 @@ This workflow ensures all components are verified before deployment.
 ### 1. Backend Tests (Pytest)
 Run the backend test suite:
 ```bash
+# Recommended: Run inside Docker to ensure all dependencies are present
+make docker-test
+
+# Or local (requires local environment setup)
 make test
-```
-Or directly via pytest:
-```bash
-pytest backend/tests/
 ```
 
 ### 2. Frontend Tests (Vitest/Jest)

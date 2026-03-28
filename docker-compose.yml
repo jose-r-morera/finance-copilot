@@ -21,6 +21,9 @@ services:
     volumes:
       - ./backend:/app/backend # mount source for hot-reload
       - ./data:/app/data # mount local data directory
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./requirements.txt:/app/requirements.txt
+      - ./requirements-dev.txt:/app/requirements-dev.txt
     environment:
       - APP_ENV=${APP_ENV:-development}
       - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
@@ -106,7 +109,7 @@ services:
       - /app/node_modules # anonymous volume for node_modules
       - /app/.next # anonymous volume for Next.js build cache
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
     restart: unless-stopped
