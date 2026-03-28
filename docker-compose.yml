@@ -65,18 +65,23 @@ services:
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
-  # frontend — Next.js app (placeholder — to be added in Phase 2)
+  # frontend — Next.js app
   # ---------------------------------------------------------------------------
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NEXT_PUBLIC_API_URL=http://backend:8000
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development         # use the dev stage for hot-reload
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app           # mount source for hot-reload
+      - /app/node_modules         # anonymous volume for node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   redis_data:
