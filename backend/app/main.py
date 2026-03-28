@@ -5,15 +5,18 @@ Initializes the app, mounts routers, and defines lifespan events.
 
 from fastapi import FastAPI
 
-# app = FastAPI(
-#     title="finance-copilot",
-#     description="Corporate Finance Autopilot",
-#     version="0.1.0",
-# )
+from .api.v1.router import router as api_router
 
-# @app.get("/")
-# async def root():
-#     return {"message": "Welcome to finance-copilot"}
+app = FastAPI(
+    title="finance-copilot",
+    description="Corporate Finance Autopilot",
+    version="0.1.0",
+)
 
-# Placeholder for router inclusion
-# app.include_router(api_router, prefix="/api/v1")
+
+@app.get("/")
+async def root() -> dict[str, str]:
+    return {"message": "Welcome to finance-copilot"}
+
+
+app.include_router(api_router, prefix="/api/v1")
