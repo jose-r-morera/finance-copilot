@@ -2,11 +2,15 @@
 Pytest configuration and fixtures.
 """
 
-# import pytest
-# from httpx import AsyncClient
-# from backend.app.main import app
+from collections.abc import AsyncGenerator
 
-# @pytest.fixture
-# async def client():
-#     async with AsyncClient(app=app, base_url="http://test") as ac:
-#         yield ac
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from backend.app.main import app
+
+
+@pytest.fixture
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        yield ac
