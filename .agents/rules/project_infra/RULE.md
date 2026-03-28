@@ -12,3 +12,4 @@ This rule defines the infrastructure and security standards for the project.
 - **Secrets Management**: NEVER hardcode API keys or secrets. Use environment variables via `.env`.
 - **Open Source First**: Prioritize naming and justifying all third-party libraries and tools used. Prefer composing existing building blocks over reinventing.
 - **Production Mindset**: Ensure configuration, error handling, and testable code at every step.
+- **Pragmatic Development**: Prioritize minimal, targeted changes and specific verification steps over "building the whole project". Focus on solving the immediate goal with the fewest possible tool calls and side effects.
