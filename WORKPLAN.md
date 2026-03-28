@@ -2,26 +2,41 @@
 
 ## Phase 1: Scaffolding & Foundational Pipeline (Day 0)
 - [x] Initial Project Structure
-- [x] CI/CD & Docker Setup
-- [x] Agent Skills & Workflows (Stubs)
-- [x] Backend Health & Baseline (Functional)
+- [x] CI/CD & Docker Setup (Backend, Redis)
+- [ ] Add **PostgreSQL** to Docker & Config.
+- [ ] **Environment Validation** (Pydantic Settings).
+- [x] Agent Skills & Workflows (Stubs).
+- [x] Backend Health & Baseline (Functional).
+- [ ] **Logging & Error Handling** (Basic structlog).
+- [ ] **Unit Tests** for core API & baseline health.
 - [x] Frontend Minimalistic UI (React/Tailwind)
+- [ ] **UI Section Scaffolding** (Brand, Competitors, Forecast, Advisory).
+- [x] **Legal: Financial Disclaimers & Non-Advice labels** (UI Footer).
 
-## Phase 2: Ingestion & Financial Data (Day 1 Morning)
+## Phase 2: Ingestion Agent Development (Day 1 Morning)
 - [ ] Ticker Identification & Meta-data enrichment.
-- [ ] SEC EDGAR & yfinance integration.
-- [ ] Brand & Positioning scraping engine.
-- [ ] Data validation & persistence layer.
+- [ ] SEC EDGAR & yfinance integration (Ingestion Agent).
+- [ ] **Competitor Benchmarking** (Peer tickers identification).
+- [ ] **Brand & Positioning scraping engine** (Logo, Mission, Key Facts).
+- [ ] **Data validation & PostgreSQL persistence layer**.
+- [ ] **Robust Error Handling** (Retry logic for scrapers/APIs).
+- [ ] **Redis Caching** for API responses (yfinance/SEC).
+- [ ] **Integration Tests**: Ingestion → Persistence → Cache flow.
 
-## Phase 3: Modeling & Reasoning (Day 1 Afternoon)
-- [ ] Multi-scenario Forecasting Engine (Base, Upside, Downside).
+## Phase 3: Reasoning & Modeling Agents (Day 1 Afternoon)
+- [ ] **Multi-agent "Director" (LangGraph + Redis)**: Centrally manages Ingestion/Modeling/Advisory state.
+- [ ] **Observability Integration** (Langfuse + Traces).
+- [ ] **Modeling Agent**: Multi-scenario Forecasting (Base, Upside, Downside).
 - [ ] Sensitivity logic for key assumptions.
-- [ ] Strategic Advisory Agent (LLM-based reasoning over data).
+- [ ] **Logic validation**: Unit tests for financial formulas.
+- [ ] **Advisory Agent**: LLM-based reasoning for strategic options.
+- [ ] **Citations & Uncertainty Labeling** (Link findings to sources).
 
 ## Phase 4: Viz & Reports (Day 2)
 - [ ] Chart generation service (Plotly/Matplotlib).
-- [ ] PDF/PPTX Export pipeline.
-- [ ] Multi-agent "Director" (LangGraph) coordination.
+- [ ] **Thinking Process UI Log** (Visible agentic traces).
+- [ ] PDF/PPTX Export pipeline (Optional / if enough time).
+- [ ] **Final End-to-End Test (E2E Pipeline)**.
 
 ## Deliverables Prep
 - [ ] Demo Video Recording.
