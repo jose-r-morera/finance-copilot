@@ -22,7 +22,7 @@ langgraph>=0.1,<0.2           # multi-agent graph orchestration (LangGraph)
 
 # --- Financial data ----------------------------------------------------------
 yfinance>=0.2,<0.3            # Yahoo Finance wrapper (unofficial but widely used)
-sec-edgar-downloader>=5.0,<6.0 # SEC EDGAR filing downloader
+edgartools>=3.0,<4.0              # SEC EDGAR API client (rich, Pythonic interface)
 pandas>=2.2,<3.0
 numpy>=1.26,<2.0
 

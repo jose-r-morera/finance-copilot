@@ -6,7 +6,7 @@
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "finance-copilot"
@@ -32,7 +32,7 @@ dependencies = [
     "langgraph>=0.1",          # multi-agent graph orchestration
     # --- Financial data ---
     "yfinance>=0.2",
-    "sec-edgar-downloader>=5.0",
+    "edgartools>=3.0",
     "pandas>=2.2",
     "numpy>=1.26",
     # --- Data validation ---
