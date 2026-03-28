@@ -12,22 +12,39 @@
 `finance-copilot` is an agentic system designed to automate the heavy lifting of corporate finance analysis. It takes a public company ticker, ingests data from disparate sources (SEC filings, market data, brand materials), builds a triple-case financial model (Base, Upside, Downside), and generates a professional investment/credit case.
 
 ### Key Capabilities
-- **Brand & Positioning Capture**: Automated scraping of investor materials and brand sources.
+- **Brand & Positioning capture**: Automated scraping of logo, mission, and key facts.
+- **Competitor Benchmarking**: Automated peer identification and comparison.
 - **Financial Reasoning Layer**: Triple-scenario forecasting with sensitizable key drivers.
-- **Agentic Pipeline**: Orchestrated via **LangGraph**, using specialized agents for retrieval, calculation, and reporting.
-- **Structured Outputs**: Professional PDF/PPTX reports and financial models.
+- **Agentic Pipeline**: Orchestrated via **LangGraph**, using specialized agents for retrieval, calculation, and reporting (with full observability).
+- **Structured Outputs**: Professional reports, models, and **PostgreSQL** persisted data.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture: Multi-Agent Pipeline
 
-The system follows a modular, pipeline-oriented architecture:
+The system uses a **Director-Lead** architecture to orchestrate specialized agents:
 
-1.  **Ingestion Layer**: Fetches data from yfinance, SEC EDGAR, and web scraping.
-2.  **Validation Layer**: Uses **Pydantic** to ensure data integrity before modeling.
-3.  **Modeling Engine**: A reasoning layer that builds forecasts based on historical trends and analyst-defined assumptions.
-4.  **Reporting Engine**: Renders outputs into structured stakeholder-ready formats.
-5.  **Multi-Agent Orchestrator**: Manages the flow between steps, allowing for loops, retries, and tool-calling.
+```mermaid
+graph TD
+    User([User Ticker Input]) --> Director{Director Agent}
+    Director --> |1. Ingest| Ingestion[Ingestion Agent]
+    Ingestion --> |SEC, yfinance, Scraping| Director
+    Director --> |2. Model| Modeling[Modeling Agent]
+    Modeling --> |DCF / Scenarios| Director
+    Director --> |3. Advise| Advisory[Advisory Agent]
+    Advisory --> |Strategic Options| Director
+    Director --> |4. Finalize| Output[Structured Report / UI]
+    
+    subgraph "State & Memory"
+        Director <--> Redis[(Redis Checkpointer)]
+    end
+```
+
+### Core Agents
+- **Director Agent (LangGraph)**: The heart of the system. Manages state, sequences the sub-agents, and handles observability traces.
+- **Ingestion Agent**: Fetches financial data (SEC EDGAR, yfinance) and performs brand/positioning web scraping.
+- **Modeling Agent**: Responsible for building the triple-scenario (Base, Upside, Downside) financial models with sensitizable drivers.
+- **Advisory Agent**: Performs strategic analysis on the modeling output to suggest funding and strategic options (M&A, debt, etc.).
 
 ---
 
@@ -40,7 +57,8 @@ The system follows a modular, pipeline-oriented architecture:
 | **Backend** | **FastAPI** | High performance, native async support, excellent type safety. |
 | **Orchestration** | **LangGraph** | Enables cyclic agent workflows and state management for complex multi-step reasoning. |
 | **LLMs** | **GPT-4o / Gemini** | High reasoning capability for financial data interpretation. |
-| **Data Handling** | **Pandas / Pydantic** | Industry standards for data manipulation and typed validation. |
+| **Data Handling** | **Pandas / Pydantic / SQLModel** | Industry standards for data manipulation, typed validation, and ORM persistence. |
+| **Storage** | **Postgres / Redis** | Relational state for data persistence and Redis for caching/agent checkpointers. |
 | **Infrastructure** | **Docker Compose** | Ensures reproducibility across environments. |
 | **Quality** | **Ruff / Mypy / Pytest** | Modern, fast tooling for linting, type-checking, and testing. |
 
@@ -94,5 +112,13 @@ See [WORKPLAN.md](WORKPLAN.md) for a detailed phased breakdown of the hackathon 
 
 ---
 
-## 👥 Authors
+## ⚠️ Limitations & Data Notes
+ 
+ - **Latency**: Real-time ticker processing takes 1-2 minutes due to multi-agent reasoning depth.
+ - **SEC Availability**: EDGAR filings are subject to SEC rate limits; the Ingestion Agent handles retries gracefully.
+ - **Model Uncertainty**: Financial forecasts are mathematical extrapolations and do not account for black-swan events.
+ 
+ ---
+ 
+ ## 👥 Authors
 - **José Ramón Morera** — [jose-r-morera](https://github.com/jose-r-morera)
