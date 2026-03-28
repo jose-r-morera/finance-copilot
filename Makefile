@@ -8,7 +8,7 @@
         test lint format typecheck clean
 
 # --- Variables ---------------------------------------------------------------
-PYTHON      := python3.11
+PYTHON      := .venv/bin/python
 PIP         := $(PYTHON) -m pip
 UVICORN     := uvicorn backend.app.main:app
 COMPOSE     := docker compose
@@ -27,12 +27,17 @@ install:
 install-dev:
 	$(PIP) install -r requirements.txt -r requirements-dev.txt
 	pre-commit install
+	cd frontend && npm install
 
 # --- Development server ------------------------------------------------------
 
 ## dev: Run FastAPI backend in hot-reload mode (no Docker)
 dev:
 	$(UVICORN) --reload --host 0.0.0.0 --port 8000
+
+## dev-frontend: Run Next.js frontend in hot-reload mode (no Docker)
+dev-frontend:
+	cd frontend && npm run dev
 
 ## up: Start all services via Docker Compose
 up:
@@ -50,20 +55,20 @@ logs:
 
 ## test: Run the full test suite
 test:
-	pytest backend/tests/ -v --tb=short
+	$(PYTHON) -m pytest backend/tests/ -v --tb=short
 
 ## lint: Run ruff linter
 lint:
-	ruff check .
+	$(PYTHON) -m ruff check .
 
 ## format: Auto-format code with ruff
 format:
-	ruff format .
-	ruff check . --fix
+	$(PYTHON) -m ruff format .
+	$(PYTHON) -m ruff check . --fix
 
 ## typecheck: Run mypy static type checker
 typecheck:
-	mypy backend/
+	$(PYTHON) -m mypy backend/
 
 ## check: Run lint + typecheck (used in CI)
 check: lint typecheck
