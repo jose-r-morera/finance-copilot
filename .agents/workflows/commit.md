@@ -16,6 +16,11 @@ We follow the **Conventional Commits** specification for clear and automated cha
 - One bug fix per commit.
 - Tests and documentation for a feature should be in the same commit as the feature itself if reasonable, or in a separate follow-up commit.
 
+### STRICT RULE: NO AUTOMATIC EDITS
+- **DO NOT** modify any files when this workflow is called. 
+- The agent's role is **strictly** to stage and commit existing changes.
+- If formatting or linting is required, the USER must perform it or explicitly ask for it as a separate task before committing.
+
 ### Types
 - **feat**: A new feature
 - **fix**: A bug fix
