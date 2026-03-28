@@ -9,6 +9,13 @@ We follow the **Conventional Commits** specification for clear and automated cha
 ### Format
 `<type>(<scope>): <description>`
 
+### Atomic Commits
+**CRITICAL**: Every commit must be atomic. Do NOT combine unrelated changes into a single commit.
+- One feature per commit.
+- One logical infrastructure change per commit.
+- One bug fix per commit.
+- Tests and documentation for a feature should be in the same commit as the feature itself if reasonable, or in a separate follow-up commit.
+
 ### Types
 - **feat**: A new feature
 - **fix**: A bug fix
@@ -20,6 +27,8 @@ We follow the **Conventional Commits** specification for clear and automated cha
 - **chore**: Changes to the build process or auxiliary tools and libraries
 
 ### Examples
+- `feat(infra): add postgresql to docker-compose`
+- `feat(db): implement company models`
 - `feat(auth): add login functionality`
 - `fix(api): resolve timeout issue in data fetcher`
 - `docs: update README with API endpoints`
@@ -27,7 +36,8 @@ We follow the **Conventional Commits** specification for clear and automated cha
 ### Pre-commit Hooks
 Ensure dependencies are clean before committing:
 ```bash
-git add .
-# Hooks will run automatically if configured
+# Add ONLY the files relevant to the atomic change
+git add <specific file1> <specific file2>
+# Commit with a focused message
 git commit -m "..."
 ```
