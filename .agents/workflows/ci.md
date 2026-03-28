@@ -6,11 +6,10 @@ description: Pipeline for Continuous Integration checks.
 
 Standard checks to be run on every pull request or push to main.
 
-### 1. Static Analysis
-Run linting and formatting checks:
+### 1. Unified Quality Check
+Runs linting, typechecking, and all backend tests in a clean environment:
 ```bash
-make lint
-make typecheck
+make docker-check
 ```
 For frontend specific:
 ```bash
@@ -18,7 +17,11 @@ cd frontend && npm run lint
 ```
 
 ### 2. Automated Testing
-Execute the full test suite as defined in the `testing` workflow.
+Execute the full backend and frontend test suites:
+```bash
+make docker-test
+cd frontend && npm test
+```
 
 ### 3. Build Verification
 Ensure Docker images build correctly:

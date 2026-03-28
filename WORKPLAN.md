@@ -43,8 +43,8 @@ This workplan outlines the development of an agentic corporate finance autopilot
 ## Phase 2: Ingestion Agent & Vector Intelligence (Day 1 Morning)
 *Goal: Populate databases with market data and searchable document chunks.*
 
-- [ ] **Ticker Identification & Meta-data enrichment**
-    - [ ] Develop service to map company names to stock tickers (e.g., "Apple" -> "AAPL").
+- [x] **Ticker Identification & Meta-data enrichment**
+    - [x] Develop service to map company names to stock tickers (e.g., "Apple" -> "AAPL").
 - [ ] **SEC EDGAR & yfinance integration (Ingestion Agent)**
     - [ ] **Structured Fetch (yfinance)**: Fetch 5-year Income Statement, Balance Sheet, and Cash Flow.
     - [ ] **Unstructured Fetch (SEC EDGAR)**: Retrieve latest 10-K and 10-Q filing text.

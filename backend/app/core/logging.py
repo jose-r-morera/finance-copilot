@@ -1,10 +1,13 @@
 import logging
+
 import structlog
+
 from .config import settings
 
-def setup_logging():
+
+def setup_logging() -> None:
     """Configure structlog for JSON/structured logging."""
-    
+
     # Standard library logging config
     logging.basicConfig(
         level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
@@ -18,7 +21,9 @@ def setup_logging():
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer() if settings.APP_ENV == "production" else structlog.dev.ConsoleRenderer(),
+            structlog.processors.JSONRenderer()
+            if settings.APP_ENV == "production"
+            else structlog.dev.ConsoleRenderer(),
         ],
         context_class=dict,
         logger_factory=structlog.stdlib.LoggerFactory(),
@@ -26,5 +31,6 @@ def setup_logging():
         cache_logger_on_first_use=True,
     )
 
+
 logger = structlog.get_logger()
-base_logger = logger # Alias for easier import
+base_logger = logger  # Alias for easier import
