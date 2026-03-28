@@ -1,0 +1,25 @@
+# =============================================================================
+# finance-copilot — requirements-dev.txt
+# Development / test dependencies (not included in Docker production image).
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+# =============================================================================
+
+# --- Testing -----------------------------------------------------------------
+pytest>=8.1,<9.0
+pytest-asyncio>=0.23,<0.24
+httpx>=0.27,<0.28              # AsyncClient for FastAPI test client
+
+# --- Linting / formatting ----------------------------------------------------
+ruff>=0.4,<0.5
+pre-commit>=3.7,<4.0
+
+# --- Type checking -----------------------------------------------------------
+mypy>=1.9,<2.0
+types-beautifulsoup4
+pandas-stubs
+types-redis
+types-jinja2
+
+# --- Dev utilities -----------------------------------------------------------
+pip-tools>=7.4,<8.0            # pip-compile for dependency management
+ipython>=8.0,<9.0

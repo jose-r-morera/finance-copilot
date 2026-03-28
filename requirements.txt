@@ -1,0 +1,52 @@
+# =============================================================================
+# finance-copilot — requirements.txt
+# Runtime dependencies (pinned for Docker reproducibility).
+# Generated from pyproject.toml [project.dependencies].
+# To regenerate: pip-compile pyproject.toml -o requirements.txt
+# =============================================================================
+
+# --- Web framework -----------------------------------------------------------
+fastapi>=0.110,<0.200
+uvicorn[standard]>=0.29,<0.30
+
+# --- Config / secrets --------------------------------------------------------
+pydantic>=2.6,<3.0
+pydantic-settings>=2.2,<3.0
+
+# --- AI / LLM orchestration --------------------------------------------------
+langchain>=0.2,<0.3
+langchain-openai>=0.1,<0.2
+langchain-google-genai>=1.0,<2.0
+langchain-anthropic>=0.1,<0.2
+langgraph>=0.1,<0.2           # multi-agent graph orchestration (LangGraph)
+
+# --- Financial data ----------------------------------------------------------
+yfinance>=0.2,<0.3            # Yahoo Finance wrapper (unofficial but widely used)
+sec-edgar-downloader>=5.0,<6.0 # SEC EDGAR filing downloader
+pandas>=2.2,<3.0
+numpy>=1.26,<2.0
+
+# --- HTTP / scraping ---------------------------------------------------------
+httpx>=0.27,<0.28
+beautifulsoup4>=4.12,<5.0
+lxml>=5.1,<6.0                 # fast HTML/XML parser used by bs4
+
+# --- Outputs -----------------------------------------------------------------
+python-pptx>=0.6,<1.0         # PowerPoint generation
+reportlab>=4.1,<5.0           # PDF generation
+jinja2>=3.1,<4.0              # templating engine
+openpyxl>=3.1,<4.0            # Excel output
+
+# --- Caching / async --------------------------------------------------------
+redis>=5.0,<6.0
+aioredis>=2.0,<3.0
+
+# --- Observability -----------------------------------------------------------
+structlog>=24.1,<25.0
+opentelemetry-sdk>=1.24,<2.0
+opentelemetry-exporter-otlp>=1.24,<2.0
+langfuse>=2.0,<3.0             # LLM observability + tracing
+
+# --- Utilities ---------------------------------------------------------------
+python-dotenv>=1.0,<2.0       # .env file loading outside Docker
+tenacity>=8.2,<9.0            # retry logic for external API calls

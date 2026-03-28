@@ -1,0 +1,41 @@
+# =============================================================================
+# finance-copilot — .pre-commit-config.yaml
+# Runs automatically on `git commit`. Install with: pre-commit install
+# =============================================================================
+
+default_language_version:
+  python: python3.11
+
+repos:
+  # --- General hygiene -------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: detect-private-key
+
+  # --- Ruff: linter + formatter (replaces flake8, isort, black) -------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # --- Mypy: static type checking -------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - "pydantic>=2.6"
+          - "pydantic-settings>=2.2"
+        args: ["--ignore-missing-imports"]
+        files: "^backend/"
