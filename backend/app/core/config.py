@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
@@ -14,11 +15,21 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # --- Database ---
+    POSTGRES_HOST: str = "db"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "finance_copilot"
     POSTGRES_PORT: int = 5432
     DATABASE_URL: Optional[str] = None
+
+    @model_validator(mode="after")
+    def assemble_db_url(self) -> "Settings":
+        if not self.DATABASE_URL:
+            self.DATABASE_URL = (
+                f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
+                f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+            )
+        return self
 
     # --- Redis ---
     REDIS_URL: str = "redis://redis:6379/0"
