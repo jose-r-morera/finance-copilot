@@ -7,7 +7,7 @@ python-dotenv==1.0.1
 yfinance==0.2.40
 pandas==2.2.2
 numpy==1.26.4
-google-cloud-aiplatform==1.56.0
+google-cloud-aiplatform==1.133.0
 google-generativeai==0.5.4
 antigravity==0.1
 requests==2.32.3
