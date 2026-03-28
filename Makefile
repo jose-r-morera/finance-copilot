@@ -8,7 +8,7 @@
         test lint format typecheck clean
 
 # --- Variables ---------------------------------------------------------------
-PYTHON      := .venv/bin/python
+PYTHON      := $(shell if [ -f .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
 PIP         := $(PYTHON) -m pip
 UVICORN     := uvicorn backend.app.main:app
 COMPOSE     := docker compose

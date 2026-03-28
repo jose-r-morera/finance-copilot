@@ -25,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           cache: 'pip'
 
       - name: Install dependencies
@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: actions/setup-python@v5 # Just for grouping, not used for build
+        uses: docker/setup-buildx-action@v3
 
       - name: Build backend image
         run: |
