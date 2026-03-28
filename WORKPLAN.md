@@ -3,14 +3,14 @@
 ## Phase 1: Scaffolding & Foundational Pipeline (Day 0)
 - [x] Initial Project Structure
 - [x] CI/CD & Docker Setup (Backend, Redis)
-- [ ] Add **PostgreSQL** to Docker & Config.
-- [ ] **Environment Validation** (Pydantic Settings).
+- [x] Add **PostgreSQL** to Docker & Config.
+- [x] **Environment Validation** (Pydantic Settings).
 - [x] Agent Skills & Workflows (Stubs).
 - [x] Backend Health & Baseline (Functional).
-- [ ] **Logging & Error Handling** (Basic structlog).
-- [ ] **Unit Tests** for core API & baseline health.
+- [x] **Logging & Error Handling** (Basic structlog).
+- [x] **Unit Tests** for core API & baseline health.
 - [x] Frontend Minimalistic UI (React/Tailwind)
-- [ ] **UI Section Scaffolding** (Brand, Competitors, Forecast, Advisory).
+- [x] **UI Section Scaffolding** (Brand, Competitors, Forecast, Advisory).
 - [x] **Legal: Financial Disclaimers & Non-Advice labels** (UI Footer).
 
 ## Phase 2: Ingestion Agent Development (Day 1 Morning)
