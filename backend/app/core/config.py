@@ -1,12 +1,41 @@
-"""
-Configuration management using pydantic-settings.
-Defines all environment variables and default values.
-"""
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
-# from pydantic_settings import BaseSettings
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8", 
+        extra="ignore"
+    )
 
-# class Settings(BaseSettings):
-#     APP_NAME: str = "finance-copilot"
-#     ...
+    # --- Application ---
+    APP_NAME: str = "finance-copilot"
+    APP_ENV: str = "development"
+    LOG_LEVEL: str = "INFO"
 
-# settings = Settings()
+    # --- Database ---
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_DB: str = "finance_copilot"
+    POSTGRES_PORT: int = 5432
+    DATABASE_URL: Optional[str] = None
+
+    # --- Redis ---
+    REDIS_URL: str = "redis://redis:6379/0"
+
+    # --- APIs ---
+    OPENAI_API_KEY: Optional[str] = None
+    ANTHROPIC_API_KEY: Optional[str] = None
+    GOOGLE_API_KEY: Optional[str] = None
+    PRIMARY_LLM_PROVIDER: str = "openai"
+    
+    ALPHA_VANTAGE_API_KEY: Optional[str] = None
+    FMP_API_KEY: Optional[str] = None
+    SEC_EDGAR_USER_AGENT: str = "finance-copilot contact@example.com"
+
+    # --- Observability ---
+    LANGFUSE_SECRET_KEY: Optional[str] = None
+    LANGFUSE_PUBLIC_KEY: Optional[str] = None
+    LANGFUSE_HOST: str = "https://cloud.langfuse.com"
+
+settings = Settings()

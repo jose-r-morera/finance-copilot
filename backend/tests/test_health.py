@@ -10,4 +10,7 @@ from httpx import AsyncClient
 async def test_health_endpoint(client: AsyncClient) -> None:
     response = await client.get("/api/v1/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "0.1.0"}
+    data = response.json()
+    assert data["status"] == "ok"
+    assert "version" in data
+    assert "database" in data
