@@ -77,6 +77,7 @@ services:
     volumes:
       - ./frontend:/app           # mount source for hot-reload
       - /app/node_modules         # anonymous volume for node_modules
+      - /app/.next                # anonymous volume for Next.js build cache
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000
     depends_on:

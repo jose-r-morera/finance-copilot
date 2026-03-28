@@ -22,12 +22,8 @@ WORKDIR /app
 # Copy node_modules from builder
 COPY --from=builder /build/node_modules ./node_modules
 
-# Non-root user
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-
 # Source will be mounted as a volume in docker-compose for hot-reload
-USER appuser
-
+# Using root for development stage to avoid UID/GID permission issues with host mounts
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
