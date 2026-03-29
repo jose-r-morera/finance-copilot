@@ -12,11 +12,13 @@
 `finance-copilot` is an agentic system designed to automate the heavy lifting of corporate finance analysis. It takes a public company ticker, ingests data from disparate sources (SEC filings, market data, brand materials), builds a triple-case financial model (Base, Upside, Downside), and generates a professional investment/credit case.
 
 ### Key Capabilities
-- **Brand & Positioning capture**: Automated scraping of logo, mission, and key facts.
-- **Competitor Benchmarking**: Automated peer identification and comparison.
+- **Dual-Phase Ingestion**:
+    - **Structured (yfinance)**: Fetches 5 years of annual financials (Income Statement, Balance Sheet, Cash Flow) and monthly stock prices into **PostgreSQL**.
+    - **Unstructured (SEC EDGAR)**: Retrieves 10-K/10-Q filings, chunks them with **LangChain**, and stores embeddings in **ChromaDB** for RAG.
+- **Brand & Positioning capture**: Automated scraping of logo, mission, and key facts (using `responsible_scraping` patterns).
+- **Enrichment Engine**: Automatically creates company records from the SEC registry and enriches them with real-time market stats (Market Cap, EV, etc.).
 - **Financial Reasoning Layer**: Triple-scenario forecasting with sensitizable key drivers.
 - **Agentic Pipeline**: Orchestrated via **LangGraph**, using specialized agents for retrieval, calculation, and reporting (with full observability).
-- **Structured Outputs**: Professional reports, models, and **PostgreSQL** persisted data.
 
 ---
 

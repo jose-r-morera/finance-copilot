@@ -45,9 +45,10 @@ This workplan outlines the development of an agentic corporate finance autopilot
 
 - [x] **Ticker Identification & Meta-data enrichment**
     - [x] Develop service to map company names to stock tickers (e.g., "Apple" -> "AAPL").
-- [/] **SEC EDGAR & yfinance integration (Ingestion Agent)**
-    - [ ] **Structured Fetch (yfinance)**: Fetch 5-year Income Statement, Balance Sheet, and Cash Flow.
-    - [/] **Unstructured Fetch (SEC EDGAR)**: Retrieve latest 10-K and 10-Q filing text.
+- [x] **Ingestion Agent: SEC EDGAR & yfinance integration**
+    - [x] SEC EDGAR: Fetch 10-K/10-Q sections, chunk, and embed. <!-- id: 48 -->
+    - [x] Structured Fetch (yfinance): Fetch 5-year Income Statement, Balance Sheet, and Cash Flow. <!-- id: 49 -->
+- [ ] Web Scraping (Brand/Positioning): Scrape logo, mission, and key brand facts using `responsible_scraping`. <!-- id: 50 -->
 - [ ] **Competitor Benchmarking (Peer tickers identification)**
     - [ ] Logic to automatically identify peer tickers and fetch their relative valuation multiples.
 - [ ] **Brand & Positioning scraping engine (Logo, Mission, Key Facts)**
