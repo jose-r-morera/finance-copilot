@@ -112,7 +112,10 @@ class IngestionManager:
             logger.info("Phase 4: Unstructured data ingestion", ticker=ticker)
             
             # 2a. Fetch SEC Filing Sections
-            sections = await sec_ingestion_service.get_filing_sections(ticker, filing_type)
+            sec_data = await sec_ingestion_service.get_filing_sections(ticker, filing_type)
+            sections = sec_data.get("sections", {})
+            filing_url = sec_data.get("url")
+            
             if not sections:
                 logger.warning("No SEC sections found for ingestion", ticker=ticker)
             else:
@@ -123,12 +126,18 @@ class IngestionManager:
                         db_company.risk_factors = sections.get("Item 1A")
                         db_company.business_summary = sections.get("Item 1")
                         db_company.mda_summary = sections.get("Item 7")
+                        db_company.latest_filing_url = filing_url
                         session.add(db_company)
                         session.commit()
-                        logger.info("Saved SEC sections to PostgreSQL", ticker=ticker)
+                        logger.info("Saved SEC sections and URL to PostgreSQL", ticker=ticker)
 
                 # 2b. Process for Vector Store (ChromaDB)
-                metadata = {"ticker": ticker, "filing_type": filing_type}
+                metadata = {
+                    "ticker": ticker, 
+                    "filing_type": filing_type,
+                    "source_url": filing_url,
+                    "accession": sec_data.get("accession")
+                }
                 chunks = document_processor.process_sections(sections, metadata)
                 
                 if chunks:

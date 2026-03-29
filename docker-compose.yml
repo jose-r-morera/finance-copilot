@@ -61,7 +61,7 @@ services:
   # chroma — vector database for storing embedded document chunks (RAG)
   # ---------------------------------------------------------------------------
   chroma:
-    image: chromadb/chroma:0.6.3
+    image: chromadb/chroma:0.5.20
     ports:
       - "8001:8000" # expose on 8001 to avoid conflict with backend
     environment:
@@ -71,7 +71,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat" ]
       interval: 10s
       timeout: 5s
       retries: 5
