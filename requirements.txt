@@ -61,4 +61,4 @@ tenacity>=8.2,<9.0            # retry logic for external API calls
 chromadb>=0.6.3
 
 # --- Image Processing ---
-Pillow>=10.0,<11.0
+Pillow>=11.0.0
