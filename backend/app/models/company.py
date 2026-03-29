@@ -18,6 +18,7 @@ class CompanyBase(SQLModel):
     risk_factors: str | None = Field(default=None, sa_column=Column(JSON)) # Use JSON/TEXT for large blocks
     business_summary: str | None = None
     mda_summary: str | None = None
+    latest_filing_url: str | None = None
     is_ingested: bool = Field(default=False)
 
 
@@ -67,3 +68,35 @@ class Competitor(SQLModel, table=True):
     closeness_score: float | None = None  # How similar is it?
 
     # company: Company = Relationship(back_populates="competitors")
+
+
+class ForecastScenario(SQLModel, table=True):
+    """
+    Stores financial projections and DCF valuation results for a specific scenario.
+    """
+    id: int | None = Field(default=None, primary_key=True)
+    company_id: int = Field(foreign_key="company.id", index=True)
+    scenario_type: str = Field(index=True)  # BASE, BULL, BEAR
+    
+    # Assumptions used for this scenario
+    revenue_growth: float
+    ebitda_margin: float
+    terminal_growth: float = 0.02
+    wacc: float = 0.08
+    
+    # Projections (list of dicts containing projected metrics for each year)
+    # Example: [{"year": 2025, "revenue": 100, "ebitda": 20, "fcf": 15}, ...]
+    projections: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    
+    # Valuation results
+    intrinsic_value: float | None = None
+    enterprise_value: float | None = None
+    equity_value: float | None = None
+    
+    # RAG Context & Reasoning
+    assumptions_reasoning: str | None = Field(default=None, sa_column=Column(JSON))
+    modeling_thoughts: str | None = Field(default=None, sa_column=Column(JSON))
+    data_sources: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    is_fallback: bool = Field(default=False)
+    
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

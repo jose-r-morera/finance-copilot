@@ -111,4 +111,7 @@ This workplan outlines the development of an agentic corporate finance autopilot
 ---
 
 ## 🚀 Optional: Production Cloud Deployment
+- [x] **Enrich with financial / market context** (Instruction Acknowledged)
+    - [x] Integrate SEC filings (RAG) into `ModelingAgent` assumptions.
+    - [x] Document and cite sources in modeling reasoning.
 - [ ] Implement [deployment_plan.md](deployment_plan.md) (Vercel + Render + Upstash).

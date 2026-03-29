@@ -17,6 +17,7 @@
     - **Unstructured (SEC EDGAR)**: Retrieves 10-K/10-Q filings, chunks them with **LangChain**, and stores embeddings in **ChromaDB** for RAG.
 - **Brand & Positioning capture**: Automated scraping of logo, mission, and key facts (using `responsible_scraping` patterns).
 - **Enrichment Engine**: Automatically creates company records from the SEC registry and enriches them with real-time market stats (Market Cap, EV, etc.).
+- **Contextual Reasoning**: Model assumptions are dynamically proposed by an LLM analyzing historical trends *and* qualitative RAG context (SEC filings, investor pages).
 - **Financial Reasoning Layer**: Triple-scenario forecasting with sensitizable key drivers.
 - **Agentic Pipeline**: Orchestrated via **LangGraph**, using specialized agents for retrieval, calculation, and reporting (with full observability).
 
@@ -133,5 +134,38 @@ See [WORKPLAN.md](WORKPLAN.md) for a detailed phased breakdown of the hackathon 
  
  ---
  
+ ## 📚 Reputable Data Sources
+  
+  - **SEC EDGAR**: [Official Filings & Disclosure](https://www.sec.gov/edgar/searchedgar/companysearch.html)
+  - **Yahoo Finance**: [Market Data & Ratios](https://finance.yahoo.com/)
+  - **Bloomberg**: [Financial News & Analysis](https://www.bloomberg.com/)
+  - **Reuters**: [Business & Sector News](https://www.reuters.com/business/finance/)
+  - **Investor Relations**: *Always consult the primary source for the most accurate and up-to-date information.*
+ 
+ ---
+ 
  ## 👥 Authors
 - **José Ramón Morera** — [jose-r-morera](https://github.com/jose-r-morera)
+---
+
+## 🏛️ Architecture: The Transparent RAG Pipeline
+Finance Copilot uses a **Hybrid Agentic Architecture**:
+- **Ingestion**: Asynchronous workers pull data from yfinance (structured) and SEC EDGAR (unstructured).
+- **Storage**: PostgreSQL handles company state, while ChromaDB stores high-dimensional embeddings.
+- **Reasoning**: A LangGraph "Director" orchestrates Gemini 2.5 Flash to perform RAG-driven modeling. 
+- **Transparency**: Unlike black-box models, we cite every assumption with clickable SEC filing links and "Analyst Thoughts" logs.
+
+---
+
+## 🚧 Limitations & Technical Debt
+- **Cold Start Ingestion**: Initial ticker ingestion can take ~60 seconds due to SEC rate limiting and deep RAG indexing.
+- **Model Hallucinations**: While cited, users should always verify "Analyst Thoughts" against the linked filings.
+- **Docker GPU Access**: To leverage the RTX 4070 fully inside Docker, the host must have "nvidia-container-toolkit" installed. Currently, it defaults to optimized CPU inference for compatibility.
+
+---
+
+## 🔌 Third-Party Data & APIs
+- **Gemini API**: Primary reasoning engine (Gemini 2.5 Flash).
+- **Yahoo Finance**: Historical price action and core financial statements.
+- **SEC EDGAR**: Primary source for regulatory filings (10-K, 10-Q).
+- **HuggingFace**: Local embedding models ("all-MiniLM-L6-v2").

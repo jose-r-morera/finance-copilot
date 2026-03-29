@@ -48,39 +48,36 @@ class SECIngestionService:
             return None
 
     @classmethod
-    async def get_filing_sections(cls, ticker: str, filing_type: str = "10-K", sections: list[str] | None = None) -> dict[str, str]:
+    async def get_filing_sections(cls, ticker: str, filing_type: str = "10-K", sections: list[str] | None = None) -> dict:
         """
         Fetch specific sections from the latest filing.
+        Returns a dict: {"sections": {...}, "url": "...", "accession": "...", "form": "..."}
         Cached in Redis for 24h.
         """
         if sections is None:
             sections = ["Item 1", "Item 1A", "Item 7"]
             
-        cache_key = f"sec:sections:{ticker}:{filing_type}:{','.join(sections)}"
+        cache_key = f"sec:sections_v2:{ticker}:{filing_type}:{','.join(sections)}"
         cached = await redis_service.get(cache_key)
         if cached:
-            logger.info("Serving SEC filing sections from cache", ticker=ticker, sections=sections)
+            logger.info("Serving SEC filing metadata from cache", ticker=ticker)
             return cached
 
         try:
-            logger.info("Fetching SEC filing sections from EDGAR", ticker=ticker, sections=sections)
+            logger.info("Fetching SEC filing metadata from EDGAR", ticker=ticker, sections=sections)
             company = await asyncio.to_thread(Company, ticker)
             filings = await asyncio.to_thread(company.get_filings, form=filing_type)
             
             if not filings:
-                return {}
+                return {"sections": {}, "url": None, "accession": None, "form": filing_type}
             
             latest_filing = filings[0]
             doc = await asyncio.to_thread(latest_filing.obj)
             
-            results = {}
+            section_contents = {}
             mapping = {
-                "Item 1": "business",
-                "Item 1A": "risk_factors",
-                "Item 7": "management_discussion",
-                "Business": "business",
-                "Risk Factors": "risk_factors",
-                "MD&A": "management_discussion"
+                "Item 1": "business", "Item 1A": "risk_factors", "Item 7": "management_discussion",
+                "Business": "business", "Risk Factors": "risk_factors", "MD&A": "management_discussion"
             }
             
             for section_label in sections:
@@ -88,20 +85,28 @@ class SECIngestionService:
                 if attr_name and hasattr(doc, attr_name):
                     content = await asyncio.to_thread(getattr, doc, attr_name)
                     if content:
-                        results[section_label] = str(content)
+                        section_contents[section_label] = str(content)
                 else:
                     try:
                         section_content = await asyncio.to_thread(doc.get_section, section_label)
                         if section_content:
-                            results[section_label] = str(section_content)
+                            section_contents[section_label] = str(section_content)
                     except Exception:
                         continue
+            
+            results = {
+                "sections": section_contents,
+                "url": latest_filing.url,
+                "accession": latest_filing.accession_number,
+                "form": latest_filing.form,
+                "filed_at": str(latest_filing.filing_date)
+            }
             
             await redis_service.set(cache_key, results, expire=86400)
             return results
             
         except Exception as e:
             logger.error("Failed to fetch SEC filing sections", ticker=ticker, error=str(e))
-            return {}
+            return {"sections": {}, "url": None, "accession": None, "form": filing_type}
 
 sec_ingestion_service = SECIngestionService()

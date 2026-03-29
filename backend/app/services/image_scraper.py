@@ -204,9 +204,9 @@ class ImageScraperService:
         return None
 
     @staticmethod
-    def get_remote_logo_url(website_url: str) -> str | None:
+    def scrape_metadata_logo(website_url: str) -> str | None:
         """
-        Original scraping logic to find the remote URL.
+        Scrapes a website for logo URLs in meta tags (og:image, apple-touch-icon).
         """
         try:
             logger.info("Attempting to scrape remote logo URL", url=website_url)

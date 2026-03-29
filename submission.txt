@@ -1,0 +1,37 @@
+FINANCE COPILOT - PROJECT SUBMISSION WRITE-UP
+Author: Jose R. Morera
+Date: March 29, 2026
+
+1. PROBLEM STATEMENT
+Financial modeling today is often a "black box." Analysts receive AI-generated projections without knowing the underlying data sources or the logic used to derive them. This lack of transparency makes it difficult to audit valuation models, especially when relying on complex SEC filings (10-Ks and 10-Qs) that are time-consuming to parse manually.
+
+2. APPROACH: TRANSPARENT AGENTIC RAG
+Our approach focuses on "Verifiable Intelligence." We built a multi-agent system (using LangGraph and Gemini 2.5 Flash) that does not just project numbers, but justifies them.
+- Contextual Ingestion: We implemented a custom RAG pipeline that ingests SEC filings while preserving source URLs as metadata.
+- Agentic Reasoner: The Modeling Agent retrieves this context to propose growth/margin assumptions, citing the exact filing used.
+- Infrastructure Resilience: To solve API stability issues, we built a hybrid engine that supports Google/OpenAI with a fallback to local GPU-accelerated embeddings (optimized for RTX 4070 hardware).
+
+3. TRADE-OFFS & REALISTIC ACHIEVEMENTS
+Achieved:
+- Full "Source to Scenario" trace: Users can click an assumption and see the original SEC document link.
+- Robust Multi-Provider Core: Seamlessly switches between Gemini, OpenAI, and Local engines.
+- GPU-Accelerated RAG: Local embeddings are significantly faster and cheaper than API calls for document-heavy analysis.
+
+Trade-offs:
+- Latency vs. Depth: Real-time analysis of a new ticker takes ~60 seconds. We prioritized deep reasoning over immediate but "dumb" numbers.
+- Infrastructure Complexity: Leveraging a local GPU required a more complex Docker/Dependency setup (Torch/CUDA) compared to simple API wrappers.
+
+4. WHAT I WOULD DO NEXT (BASED ON WORKPLAN)
+- Sensitivity Logic: Implement deep sensitivity analysis to test how valuation shifts with +/- 1% changes in growth or cost of capital (WACC).
+- Advisory Agent Synthesis: Develop the full "Strategic Memo" generator to synthesize raw financial numbers and RAG-retrieved qualitative insights into a professional investment case.
+- LangGraph Orchestration: Fully implement the cyclic "Director" manager to handle complex human-in-the-loop handoffs between agents.
+- PPTX/PDF Export: Complete the professional reporting pipeline to generate PowerPoint and PDF versions of the dashboard.
+- Cloud Deployment: Deploy the containerized stack to production (Vercel + Render + Upstash) as planned.
+
+5. VALUABLE PROMPTS USED DURING DEVELOPMENT
+- "Refactor the ModelingAgent to return a structured JSON including 'modeling_thoughts' and 'data_sources' (URLs) to enable UI citations."
+- "Implement a provider-agnostic EmbeddingService that defaults to local sentence-transformers if the API fails, leveraging torch.cuda.is_available()."
+- "Create a Next.js component that displays a 'Deterministic Model Active' warning banner if the LLM processing flag is false but a model exists."
+
+---
+EOF

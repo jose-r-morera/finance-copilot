@@ -7,10 +7,23 @@ logger = structlog.get_logger(__name__)
 
 class VectorStoreService:
     def __init__(self):
-        self.client = chromadb.HttpClient(
-            host=settings.CHROMA_HOST,
-            port=settings.CHROMA_PORT
-        )
+        import os
+        try:
+            # Heuristic for test environment or local-out-of-docker
+            if not os.path.exists("/.dockerenv") and settings.CHROMA_HOST == "chroma":
+                # Fallback to local persistence for testing/host-mode
+                logger.info("Initializing Chroma PersistentClient (local-out-of-docker)")
+                self.client = chromadb.PersistentClient(path="./data/chroma")
+            else:
+                logger.info("Initializing Chroma HttpClient", host=settings.CHROMA_HOST)
+                self.client = chromadb.HttpClient(
+                    host=settings.CHROMA_HOST,
+                    port=settings.CHROMA_PORT
+                )
+        except Exception as e:
+            logger.warning("Failed to initialize Chroma Client, falling back to ephemeral", error=str(e))
+            self.client = chromadb.Client() # Ephemeral
+        
         self.collection_name = settings.CHROMA_COLLECTION_NAME
 
     def get_or_create_collection(self):

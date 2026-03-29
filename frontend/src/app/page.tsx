@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { SearchBox } from "@/components/SearchBox";
 import { PriceChart } from "@/components/PriceChart";
 import { FinancialsView } from "@/components/FinancialsView";
+import { ForecastView } from "@/components/ForecastView";
 import { Loader2, Globe, TrendingUp, ShieldAlert, BarChart3, Database } from "lucide-react";
 
 export default function Home() {
@@ -307,6 +308,11 @@ export default function Home() {
                     No financial statements identified.
                   </div>
                 ))}
+              </section>
+
+              {/* Modeling & Forecast Section */}
+              <section className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <ForecastView ticker={ticker} />
               </section>
             </div>
           </div>
