@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     ALPHA_VANTAGE_API_KEY: str | None = None
     FMP_API_KEY: str | None = None
     SEC_EDGAR_USER_AGENT: str = "finance-copilot contact@example.com"
+    GEMINI_EMBEDDING_MODEL: str = "models/text-embedding-004"
 
     # --- Vector Database (ChromaDB) ---
     CHROMA_HOST: str = "chroma"

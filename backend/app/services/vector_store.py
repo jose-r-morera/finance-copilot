@@ -35,7 +35,7 @@ class VectorStoreService:
             logger.warning("ChromaDB heartbeat failed", error=str(e))
             return False
 
-    def upsert_documents(self, ids: list[str], documents: list[str], metadatas: list[dict] | None = None):
+    def upsert_documents(self, ids: list[str], documents: list[str], metadatas: list[dict] | None = None, embeddings: list[list[float]] | None = None):
         """
         Upserts documents into the collection.
         """
@@ -43,7 +43,8 @@ class VectorStoreService:
         collection.upsert(
             ids=ids,
             documents=documents,
-            metadatas=metadatas
+            metadatas=metadatas,
+            embeddings=embeddings
         )
         logger.info("Upserted documents to Chroma", count=len(ids))
 
