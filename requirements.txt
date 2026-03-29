@@ -20,6 +20,8 @@ langchain-google-genai>=1.0,<2.0
 langchain-anthropic>=0.1,<0.2
 langchain-text-splitters>=0.2,<0.3
 langgraph>=0.1,<0.2           # multi-agent graph orchestration (LangGraph)
+openai>=1.0.0                 # direct LLM client
+langchain-huggingface>=0.0.1  # local embeddings (CRITICAL: DO NOT CACHE)
 
 # --- Financial data ----------------------------------------------------------
 yfinance>=0.2,<0.3            # Yahoo Finance wrapper (unofficial but widely used)
@@ -57,8 +59,10 @@ langfuse>=2.0,<3.0             # LLM observability + tracing
 python-dotenv>=1.0,<2.0       # .env file loading outside Docker
 tenacity>=8.2,<9.0            # retry logic for external API calls
 
-# --- Vector Database ---
-chromadb>=0.6.3
+# --- Vector Database & Local Embeddings ---
+chromadb==0.5.20
+sentence-transformers>=3.0,<4.0
+torch>=2.2,<3.0 --index-url https://download.pytorch.org/whl/cpu # Default to CPU for safe builds, GPU can be enabled via environment.
 
 # --- Image Processing ---
 Pillow>=10.0,<11.0
