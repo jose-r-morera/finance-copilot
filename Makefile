@@ -108,3 +108,8 @@ clean:
 	find . -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
 	rm -rf dist/ build/ *.egg-info/
+
+## purge-logos: Remove all local logos and clear database URLs
+purge-logos:
+	rm -rf backend/static/logos/*
+	docker exec finance-copilot-db-1 psql -U postgres -d finance_copilot -c "UPDATE company SET logo_url = NULL;"

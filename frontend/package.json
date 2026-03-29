@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "purge-logos": "rm -rf ../backend/static/logos/* && docker exec finance-copilot-db-1 psql -U postgres -d finance_copilot -c 'UPDATE company SET logo_url = NULL;'"
   },
   "dependencies": {
     "clsx": "^2.1.1",
