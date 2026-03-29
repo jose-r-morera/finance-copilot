@@ -100,6 +100,17 @@ This repository includes a `.agents` directory designed specifically for the **A
 
 ---
 
+## 🧹 Maintenance & Cache
+
+If you need to refresh brand assets or clear the ingestion cache:
+
+### Purge Logos
+To delete all local logos and reset database URLs (forcing a re-scrape on next view):
+- **Via Makefile**: `make purge-logos`
+- **Via npm**: `cd frontend && npm run purge-logos`
+
+---
+
 ## 🚦 Roadmap (Work Plan)
 
 See [WORKPLAN.md](WORKPLAN.md) for a detailed phased breakdown of the hackathon development.

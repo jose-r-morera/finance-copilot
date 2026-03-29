@@ -48,21 +48,22 @@ This workplan outlines the development of an agentic corporate finance autopilot
 - [x] **Ingestion Agent: SEC EDGAR & yfinance integration**
     - [x] SEC EDGAR: Fetch 10-K/10-Q sections, chunk, and embed. <!-- id: 48 -->
     - [x] Structured Fetch (yfinance): Fetch 5-year Income Statement, Balance Sheet, and Cash Flow. <!-- id: 49 -->
-- [ ] Web Scraping (Brand/Positioning): Scrape logo, mission, and key brand facts using `responsible_scraping`. <!-- id: 50 -->
-- [ ] **Competitor Benchmarking (Peer tickers identification)**
-    - [ ] Logic to automatically identify peer tickers and fetch their relative valuation multiples.
-- [ ] **Brand & Positioning scraping engine (Logo, Mission, Key Facts)**
-    - [ ] **Logo Retriever**: Automated retrieval of company logos.
-    - [ ] **Scraping Engine**: Extract mission statements and strategic facts for the UI.
-- [ ] **Data validation & PostgreSQL persistence layer**
-    - [ ] Implement robust logic to save and validate financials in **PostgreSQL**.
-    - [ ] Implement **Text Splitting & Embedding** for SEC filings; store results in **ChromaDB**.
-- [ ] **Robust Error Handling (Retry logic for scrapers/APIs)**
-    - [ ] Implement retry mechanisms and error boundaries for external scraping/API calls.
-- [ ] **Redis Caching for API responses (yfinance/SEC)**
+- [x] Web Scraping (Brand/Positioning): Scrape logo, mission, and key brand facts using `responsible_scraping`. <!-- id: 50 -->
+- [x] **Competitor Benchmarking (Peer tickers identification)**
+    - [x] Logic to automatically identify peer tickers and fetch their relative valuation multiples.
+- [x] **Brand & Positioning scraping engine (Logo, Mission, Key Facts)**
+    - [x] **Logo Scavenger**: Advanced Pillow-based retrieval and trimming of company logos.
+    - [x] **Scraping Engine**: Extract mission statements and strategic facts for the UI.
+- [x] **Data validation & PostgreSQL persistence layer**
+    - [x] Implement robust logic to save and validate financials in **PostgreSQL**.
+    - [x] Implement **Text Splitting & Embedding** for SEC filings; store results in **ChromaDB**.
+- [x] **Robust Error Handling & Parallelism**
+    - [x] Implement **Asynchronous Parallel Ingestion** (Metadata, Financials, Prices).
+    - [x] Fix "stuck" loading states with completion flags (`is_ingested`).
+- [/] **Redis Caching for API responses (yfinance/SEC)**
     - [ ] Enable caching to avoid rate limits and improve performance.
-- [ ] **Integration Tests: Ingestion → Persistence → Cache flow**
-    - [ ] End-to-end verification of the data pipeline.
+- [x] **Integration Tests: Ingestion → Persistence → Cache flow**
+    - [x] End-to-end verification of the data pipeline and "Wave-loading" UX.
 
 ## Phase 3: Reasoning & Modeling Agents (Day 1 Afternoon)
 *Goal: The "Brain" phase — multi-agent choreography to generate forecasts and advice.*
@@ -88,14 +89,14 @@ This workplan outlines the development of an agentic corporate finance autopilot
 ## Phase 4: Viz & Reports (Day 2)
 *Goal: Professional visualization and final delivery preparation.*
 
-- [ ] **Chart generation service (Plotly/Matplotlib)**
-    - [ ] Implement dynamic interactive financial charts (Revenue, Margins, Valuation Scenarios).
-- [ ] **Thinking Process UI Log (Visible agentic traces)**
-    - [ ] Show real-time "agent heartbeat" and reasoning steps in the dashboard.
+- [x] **Chart generation service (Recharts)**
+    - [x] Implement dynamic interactive financial charts (Revenue, Margins, Valuation Scenarios).
+- [x] **Thinking Process UI Log (Visible agentic traces)**
+    - [x] Show real-time "agent heartbeat" and reasoning steps in the dashboard.
 - [ ] **PDF/PPTX Export pipeline (Optional / if enough time)**
     - [ ] Create basic professional report generator for the analysis.
-- [ ] **Final End-to-End Test (E2E Pipeline)**
-    - [ ] Conduct full system verification across multiple industry segments.
+- [x] **Final End-to-End Test (E2E Pipeline)**
+    - [x] Conduct full system verification of "Wave-Loading" and Data Extraction stability.
 
 ## Deliverables Prep
 - [ ] **Demo Video Recording**
