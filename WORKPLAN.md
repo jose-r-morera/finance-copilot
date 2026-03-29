@@ -17,9 +17,9 @@ This workplan outlines the development of an agentic corporate finance autopilot
 - [x] **Add PostgreSQL to Docker & Config**
     - [x] Integrate **PostgreSQL** as the relational source of truth for financials.
     - [x] Setup persistent volumes and initial database schema.
-- [ ] **Add ChromaDB to Docker & Config (Chroma Setup)**
-    - [ ] Add **ChromaDB** to `docker-compose.yml` as our vector database for RAG.
-    - [ ] Configure `CHROMADB_HOST` and `CHROMADB_PORT` in environment.
+- [x] **Add ChromaDB to Docker & Config (Chroma Setup)**
+    - [x] Add **ChromaDB** to `docker-compose.yml` as our vector database for RAG.
+    - [x] Configure `CHROMADB_HOST` and `CHROMADB_PORT` in environment.
 - [x] **Environment Validation (Pydantic Settings)**
     - [x] Implement `pydantic-settings` for robust environment variable management.
     - [x] Validate critical API keys (OpenAI, SEC, Google) on startup.

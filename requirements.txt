@@ -55,3 +55,6 @@ langfuse>=2.0,<3.0             # LLM observability + tracing
 # --- Utilities ---------------------------------------------------------------
 python-dotenv>=1.0,<2.0       # .env file loading outside Docker
 tenacity>=8.2,<9.0            # retry logic for external API calls
+
+# --- Vector Database ---
+chromadb>=0.6.3
