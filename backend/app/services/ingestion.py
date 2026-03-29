@@ -1,4 +1,5 @@
 import structlog
+from backend.app.services.image_scraper import image_scraper_service
 from backend.app.services.sec_ingestion import sec_ingestion_service
 from backend.app.services.document_processor import document_processor
 from backend.app.services.vector_store import vector_store_service
@@ -27,62 +28,107 @@ class IngestionManager:
         try:
             logger.info("Starting ingestion pipeline", ticker=ticker, type=filing_type)
             
-            # --- PHASE 1: Structured Data (yfinance) ---
-            logger.info("Phase 1: Structured data ingestion", ticker=ticker)
-            
-            # 1a. Ensure Company exists and enrich it
+            import asyncio
+            from functools import partial
+
+            # --- PHASE 0: Initial Identity (Instant) ---
+            logger.info("Phase 0: Initial identity creation", ticker=ticker)
             with Session(engine) as session:
                 db_company = session.exec(select(Company).where(Company.ticker == ticker)).first()
                 if not db_company:
-                    logger.info("Company not in DB, creating from registry", ticker=ticker)
-                    # Try to find in registry
+                    # Instant commit with ticker as name initially
+                    db_company = Company(ticker=ticker, name=ticker)
+                    session.add(db_company)
+                    session.commit()
+                    session.refresh(db_company)
+                    logger.info("Phase 0: Committed initial identity (ticker only)", ticker=ticker)
+                    
+                    # Background refinement from registry (non-blocking for this phase)
                     from backend.app.services.sec_search import company_search_service
                     matches = await company_search_service.search(ticker, limit=1)
                     if matches and matches[0]["ticker"] == ticker:
-                        db_company = Company(
-                            ticker=ticker,
-                            name=matches[0]["name"]
-                            # CIK can be added if we expand the model
-                        )
+                        db_company.name = matches[0]["name"]
                         session.add(db_company)
                         session.commit()
-                        session.refresh(db_company)
-                    else:
-                        # Fallback for tickers not in SEC registry (e.g. non-US or new)
-                        db_company = Company(ticker=ticker, name=ticker)
-                        session.add(db_company)
-                        session.commit()
-                        session.refresh(db_company)
+                        logger.info("Phase 0: Refined identity from registry", ticker=ticker)
 
-                # Enrich with yfinance info
-                company_info = yfinance_service.get_company_info(ticker)
-                if company_info:
-                    for key, value in company_info.items():
-                        if value:
-                            setattr(db_company, key, value)
-                    session.add(db_company)
-                    session.commit()
+            # --- PHASE 1-3: Parallel Data Fetching ---
+            # Fetch Metadata, Financials, and Prices concurrently to reduce total latency
+            logger.info("Starting parallel data fetch (yfinance)", ticker=ticker)
             
-            # 1b. Financial Statements
-            financials = yfinance_service.get_financials(ticker)
+            # We use to_thread because yfinance is blocking/network-bound
+            tasks = [
+                asyncio.to_thread(yfinance_service.get_company_info, ticker),
+                asyncio.to_thread(yfinance_service.get_financials, ticker),
+                asyncio.to_thread(yfinance_service.get_historical_prices, ticker)
+            ]
+            
+            # Run all yf calls in parallel
+            company_info, financials, prices = await asyncio.gather(*tasks)
+            
+            # --- Save Meta Phase ---
+            if company_info:
+                with Session(engine) as session:
+                    db_company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+                    if db_company:
+                        # Fallback for Mission (First 1-2 sentences of description)
+                        if not company_info.get("mission") and company_info.get("description"):
+                            desc = company_info["description"]
+                            sentences = desc.split(". ")
+                            mission = sentences[0].strip()
+                            if len(mission) < 50 and len(sentences) > 1:
+                                mission = mission + ". " + sentences[1].strip()
+                            if not mission.endswith("."):
+                                mission += "."
+                            company_info["mission"] = mission
+                        
+                        for key, value in company_info.items():
+                            if value and key != "logo_url":
+                                setattr(db_company, key, value)
+                        session.add(db_company)
+                        session.commit()
+                        logger.info("Phase 1: Committed metadata enrichment", ticker=ticker)
+
+            # --- Save Financials/Prices Phase ---
             if financials:
                 financials_persistence_service.save_financials(ticker, financials)
-            
-            # 1c. Historical Prices
-            prices = yfinance_service.get_historical_prices(ticker)
             if prices:
                 financials_persistence_service.save_stock_prices(ticker, prices)
+            logger.info("Phase 3: Committed financials and prices", ticker=ticker)
+
+            # --- PHASE 2: Logo Scraping (Variable) ---
+            # Logo scraping is now done AFTER metadata is committed so we have the website
+            if company_info and company_info.get("website"):
+                scraped_logo = image_scraper_service.get_logo_for_ticker(ticker, company_info.get("website"))
+                if scraped_logo:
+                    with Session(engine) as session:
+                        db_company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+                        if db_company:
+                            db_company.logo_url = scraped_logo
+                            session.add(db_company)
+                            session.commit()
+                            logger.info("Phase 2: Committed logo", ticker=ticker)
             
-            # --- PHASE 2: Unstructured Data (SEC EDGAR) ---
-            logger.info("Phase 2: Unstructured data ingestion", ticker=ticker)
+            # --- PHASE 4: Unstructured Data (SEC EDGAR) ---
+            logger.info("Phase 4: Unstructured data ingestion", ticker=ticker)
             
             # 2a. Fetch SEC Filing Sections
             sections = sec_ingestion_service.get_filing_sections(ticker, filing_type)
             if not sections:
                 logger.warning("No SEC sections found for ingestion", ticker=ticker)
-                # We continue since structured data might have been saved
             else:
-                # 2b. Process for Vector Store
+                # Save primary sections to SQL for reliability
+                with Session(engine) as session:
+                    db_company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+                    if db_company:
+                        db_company.risk_factors = sections.get("Item 1A")
+                        db_company.business_summary = sections.get("Item 1")
+                        db_company.mda_summary = sections.get("Item 7")
+                        session.add(db_company)
+                        session.commit()
+                        logger.info("Saved SEC sections to PostgreSQL", ticker=ticker)
+
+                # 2b. Process for Vector Store (ChromaDB)
                 metadata = {"ticker": ticker, "filing_type": filing_type}
                 chunks = document_processor.process_sections(sections, metadata)
                 
@@ -91,8 +137,7 @@ class IngestionManager:
                     metadatas = [c["metadata"] for c in chunks]
                     ids = [f"{ticker}_{filing_type}_{i}" for i in range(len(chunks))]
 
-                    # 2c. Embed Chunks (Gemini with Fallback)
-                    # Note: This will use the EmbeddingService which currently has an API key blocker
+                    # 2c. Embed Chunks (with Fallback to local via None)
                     try:
                         embeddings = embedding_service.embed_chunks(documents)
                         
@@ -104,8 +149,17 @@ class IngestionManager:
                             embeddings=embeddings
                         )
                     except Exception as embed_e:
-                        logger.error("Embedding/Vector storage failed (likely API keys)", error=str(embed_e))
+                        logger.error("Chroma storage failed", error=str(embed_e))
             
+            # --- FINAL: Mark Ingestion Complete ---
+            with Session(engine) as session:
+                db_company = session.exec(select(Company).where(Company.ticker == ticker)).first()
+                if db_company:
+                    db_company.is_ingested = True
+                    session.add(db_company)
+                    session.commit()
+                    logger.info("Ingestion officially marked as complete", ticker=ticker)
+
             logger.info("Ingestion pipeline completed", ticker=ticker)
             return {
                 "status": "success",

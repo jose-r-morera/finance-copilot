@@ -36,7 +36,8 @@ class YFinanceService:
                 "market_cap": info.get("marketCap"),
                 "enterprise_value": info.get("enterpriseValue"),
                 "shares_outstanding": info.get("sharesOutstanding"),
-                "logo_url": info.get("logo_url")
+                "logo_url": info.get("logo_url"),
+                "website": info.get("website")
             }
             return cls._clean_dict(raw_data)
         except Exception as e:
@@ -65,15 +66,21 @@ class YFinanceService:
             years = income_stmt.columns
             combined_data = []
             
+            def get_val(df, labels, current_date):
+                for label in labels:
+                    if label in df.index and not pd.isna(df.loc[label, current_date]):
+                        return float(df.loc[label, current_date])
+                return None
+
             for date in years:
                 year_data = {
                     "fiscal_year": date.year,
                     "period": "FY",
-                    "revenue": float(income_stmt.loc["Total Revenue", date]) if "Total Revenue" in income_stmt.index and not pd.isna(income_stmt.loc["Total Revenue", date]) else None,
-                    "net_income": float(income_stmt.loc["Net Income", date]) if "Net Income" in income_stmt.index and not pd.isna(income_stmt.loc["Net Income", date]) else None,
-                    "total_assets": float(balance_sheet.loc["Total Assets", date]) if "Total Assets" in balance_sheet.index and not pd.isna(balance_sheet.loc["Total Assets", date]) else None,
-                    "total_liabilities": float(balance_sheet.loc["Total Liabilities Net Minority Interest", date]) if "Total Liabilities Net Minority Interest" in balance_sheet.index and not pd.isna(balance_sheet.loc["Total Liabilities Net Minority Interest", date]) else None,
-                    "operating_cash_flow": float(cash_flow.loc["Operating Cash Flow", date]) if "Operating Cash Flow" in cash_flow.index and not pd.isna(cash_flow.loc["Operating Cash Flow", date]) else None,
+                    "revenue": get_val(income_stmt, ["Total Revenue", "Operating Revenue", "Revenue"], date),
+                    "net_income": get_val(income_stmt, ["Net Income", "Net Income Common Stockholders", "Net Income From Continuing Operation Net Minority Interest"], date),
+                    "total_assets": get_val(balance_sheet, ["Total Assets"], date),
+                    "total_liabilities": get_val(balance_sheet, ["Total Liabilities Net Minority Interest", "Total Liabilities"], date),
+                    "operating_cash_flow": get_val(cash_flow, ["Operating Cash Flow", "Cash Flow From Operating Activities"], date),
                     "all_metrics": {
                         "income_statement": cls._clean_dict(income_stmt[date].to_dict()),
                         "balance_sheet": cls._clean_dict(balance_sheet[date].to_dict()),
