@@ -14,6 +14,11 @@ class CompanyBase(SQLModel):
     market_cap: float | None = None
     enterprise_value: float | None = None
     shares_outstanding: float | None = None
+    website: str | None = None
+    risk_factors: str | None = Field(default=None, sa_column=Column(JSON)) # Use JSON/TEXT for large blocks
+    business_summary: str | None = None
+    mda_summary: str | None = None
+    is_ingested: bool = Field(default=False)
 
 
 class Company(CompanyBase, table=True):

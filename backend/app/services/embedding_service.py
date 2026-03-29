@@ -29,11 +29,15 @@ class EmbeddingService:
             logger.info("Generating embeddings with Gemini", count=len(texts))
             return self.gemini_embeddings.embed_documents(texts)
         except Exception as e:
-            if "API_KEY_INVALID" in str(e) or "400" in str(e):
-                logger.warning("Gemini embedding failed (likely API key), falling back to OpenAI", error=str(e))
-                return self.openai_embeddings.embed_documents(texts)
+            if "API_KEY_INVALID" in str(e) or "400" in str(e) or "401" in str(e):
+                logger.warning("Gemini embedding failed, falling back to OpenAI", error=str(e))
+                try:
+                    return self.openai_embeddings.embed_documents(texts)
+                except Exception as oe:
+                    logger.error("OpenAI embedding also failed, falling back to Chroma local", error=str(oe))
+                    return None
             logger.error("Failed to generate embeddings", error=str(e))
-            raise
+            return None
 
     def embed_query(self, text: str) -> list[float]:
         """
@@ -42,10 +46,14 @@ class EmbeddingService:
         try:
             return self.gemini_embeddings.embed_query(text)
         except Exception as e:
-            if "API_KEY_INVALID" in str(e) or "400" in str(e):
+            if "API_KEY_INVALID" in str(e) or "400" in str(e) or "401" in str(e):
                 logger.warning("Gemini query embedding failed, falling back to OpenAI")
-                return self.openai_embeddings.embed_query(text)
+                try:
+                    return self.openai_embeddings.embed_query(text)
+                except Exception:
+                    logger.error("OpenAI query embedding failed, falling back to Chroma local")
+                    return None
             logger.error("Failed to generate query embedding", error=str(e))
-            raise
+            return None
 
 embedding_service = EmbeddingService()

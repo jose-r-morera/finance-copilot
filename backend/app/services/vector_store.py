@@ -9,8 +9,7 @@ class VectorStoreService:
     def __init__(self):
         self.client = chromadb.HttpClient(
             host=settings.CHROMA_HOST,
-            port=settings.CHROMA_PORT,
-            settings=ChromaSettings(allow_reset=True, anonymized_telemetry=False)
+            port=settings.CHROMA_PORT
         )
         self.collection_name = settings.CHROMA_COLLECTION_NAME
 
@@ -48,14 +47,15 @@ class VectorStoreService:
         )
         logger.info("Upserted documents to Chroma", count=len(ids))
 
-    def query(self, query_texts: list[str], n_results: int = 5):
+    def query(self, query_texts: list[str], n_results: int = 5, where: dict | None = None):
         """
-        Queries the collection for similar documents.
+        Queries the collection for similar documents with optional metadata filtering.
         """
         collection = self.get_or_create_collection()
         return collection.query(
             query_texts=query_texts,
-            n_results=n_results
+            n_results=n_results,
+            where=where
         )
 
 vector_store_service = VectorStoreService()
