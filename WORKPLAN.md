@@ -60,8 +60,8 @@ This workplan outlines the development of an agentic corporate finance autopilot
 - [x] **Robust Error Handling & Parallelism**
     - [x] Implement **Asynchronous Parallel Ingestion** (Metadata, Financials, Prices).
     - [x] Fix "stuck" loading states with completion flags (`is_ingested`).
-- [/] **Redis Caching for API responses (yfinance/SEC)**
-    - [ ] Enable caching to avoid rate limits and improve performance.
+- [x] **Redis Caching for API responses (yfinance/SEC)**
+    - [x] Enable caching to avoid rate limits and improve performance.
 - [x] **Integration Tests: Ingestion → Persistence → Cache flow**
     - [x] End-to-end verification of the data pipeline and "Wave-loading" UX.
 
