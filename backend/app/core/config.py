@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     FMP_API_KEY: str | None = None
     SEC_EDGAR_USER_AGENT: str = "finance-copilot contact@example.com"
 
+    # --- Vector Database (ChromaDB) ---
+    CHROMA_HOST: str = "chroma"
+    CHROMA_PORT: int = 8000
+    CHROMA_COLLECTION_NAME: str = "finance_docs"
+
     # --- Observability ---
     LANGFUSE_SECRET_KEY: str | None = None
     LANGFUSE_PUBLIC_KEY: str | None = None
