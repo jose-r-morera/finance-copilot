@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from .api.v1.router import router as api_router
 from .core.database import init_db
@@ -41,5 +43,9 @@ app.add_middleware(
 async def root() -> dict[str, str]:
     return {"message": "Welcome to finance-copilot"}
 
+# Mount static files for logos
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 app.include_router(api_router, prefix="/api/v1")
