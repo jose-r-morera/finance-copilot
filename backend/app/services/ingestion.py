@@ -56,11 +56,10 @@ class IngestionManager:
             # Fetch Metadata, Financials, and Prices concurrently to reduce total latency
             logger.info("Starting parallel data fetch (yfinance)", ticker=ticker)
             
-            # We use to_thread because yfinance is blocking/network-bound
             tasks = [
-                asyncio.to_thread(yfinance_service.get_company_info, ticker),
-                asyncio.to_thread(yfinance_service.get_financials, ticker),
-                asyncio.to_thread(yfinance_service.get_historical_prices, ticker)
+                yfinance_service.get_company_info(ticker),
+                yfinance_service.get_financials(ticker),
+                yfinance_service.get_historical_prices(ticker)
             ]
             
             # Run all yf calls in parallel
@@ -113,7 +112,7 @@ class IngestionManager:
             logger.info("Phase 4: Unstructured data ingestion", ticker=ticker)
             
             # 2a. Fetch SEC Filing Sections
-            sections = sec_ingestion_service.get_filing_sections(ticker, filing_type)
+            sections = await sec_ingestion_service.get_filing_sections(ticker, filing_type)
             if not sections:
                 logger.warning("No SEC sections found for ingestion", ticker=ticker)
             else:

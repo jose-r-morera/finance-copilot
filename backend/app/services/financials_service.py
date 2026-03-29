@@ -60,13 +60,15 @@ class FinancialsPersistenceService:
                 return
             
             for p_data in prices:
-                # For prices, we check by date (exact timestamp might be tricky if TZ differs, 
-                # but yfinance usually returns consistent dates)
-                # To be safe, we could use a range or just trusting the date object.
+                # Ensure date is a datetime object (it might be a string from Redis cache)
+                date_val = p_data["date"]
+                if isinstance(date_val, str):
+                    date_val = datetime.strptime(date_val, "%Y-%m-%d")
+                
                 price_entry = session.exec(
                     select(StockPrice).where(
                         StockPrice.company_id == company.id,
-                        StockPrice.date == p_data["date"]
+                        StockPrice.date == date_val
                     )
                 ).first()
                 
@@ -77,7 +79,9 @@ class FinancialsPersistenceService:
                 else:
                     new_price = StockPrice(
                         company_id=company.id,
-                        **p_data
+                        date=date_val,
+                        close_price=p_data["close_price"],
+                        volume=p_data.get("volume")
                     )
                     session.add(new_price)
             

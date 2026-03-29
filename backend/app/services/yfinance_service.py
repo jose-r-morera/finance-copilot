@@ -2,13 +2,16 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import structlog
+import asyncio
 from datetime import datetime, timedelta
+from backend.app.services.redis_service import redis_service
 
 logger = structlog.get_logger(__name__)
 
 class YFinanceService:
     """
     Service to fetch structured financial data and market statistics using yfinance.
+    Now with Redis caching support.
     """
 
     @staticmethod
@@ -19,14 +22,21 @@ class YFinanceService:
         return {k: (None if pd.isna(v) else v) for k, v in d.items()}
 
     @classmethod
-    def get_company_info(cls, ticker: str) -> dict:
+    async def get_company_info(cls, ticker: str) -> dict:
         """
         Fetch general company information and key statistics.
+        Cached in Redis for 24h.
         """
+        cache_key = f"yf:info:{ticker}"
+        cached = await redis_service.get(cache_key)
+        if cached:
+            logger.info("Serving company info from cache", ticker=ticker)
+            return cached
+
         try:
             logger.info("Fetching company info from yfinance", ticker=ticker)
             ticker_obj = yf.Ticker(ticker)
-            info = ticker_obj.info
+            info = await asyncio.to_thread(lambda: ticker_obj.info)
             
             raw_data = {
                 "name": info.get("longName"),
@@ -39,25 +49,33 @@ class YFinanceService:
                 "logo_url": info.get("logo_url"),
                 "website": info.get("website")
             }
-            return cls._clean_dict(raw_data)
+            cleaned = cls._clean_dict(raw_data)
+            await redis_service.set(cache_key, cleaned, expire=86400)
+            return cleaned
         except Exception as e:
             logger.error("Failed to fetch company info", ticker=ticker, error=str(e))
             return {}
 
     @classmethod
-    def get_financials(cls, ticker: str) -> list[dict]:
+    async def get_financials(cls, ticker: str) -> list[dict]:
         """
         Fetch last 5 years of Income Statement, Balance Sheet, and Cash Flow.
-        Returns a list of dictionaries, one per fiscal year.
+        Cached in Redis for 24h.
         """
+        cache_key = f"yf:financials:{ticker}"
+        cached = await redis_service.get(cache_key)
+        if cached:
+            logger.info("Serving financials from cache", ticker=ticker)
+            return cached
+
         try:
             logger.info("Fetching financials from yfinance", ticker=ticker)
             ticker_obj = yf.Ticker(ticker)
             
-            # Annual DataFrames
-            income_stmt = ticker_obj.financials  # Income Statement
-            balance_sheet = ticker_obj.balance_sheet
-            cash_flow = ticker_obj.cashflow
+            # Annual DataFrames (Fetch in thread)
+            income_stmt = await asyncio.to_thread(lambda: ticker_obj.financials)
+            balance_sheet = await asyncio.to_thread(lambda: ticker_obj.balance_sheet)
+            cash_flow = await asyncio.to_thread(lambda: ticker_obj.cashflow)
             
             if income_stmt.empty:
                 return []
@@ -88,29 +106,39 @@ class YFinanceService:
                     }
                 }
                 combined_data.append(year_data)
-                
+            
+            await redis_service.set(cache_key, combined_data, expire=86400)
             return combined_data
         except Exception as e:
             logger.error("Failed to fetch financials", ticker=ticker, error=str(e))
             return []
 
-    @staticmethod
-    def get_historical_prices(ticker: str, period: str = "5y", interval: str = "1mo") -> list[dict]:
+    @classmethod
+    async def get_historical_prices(cls, ticker: str, period: str = "5y", interval: str = "1mo") -> list[dict]:
         """
         Fetch historical stock price data.
+        Cached in Redis for 1h.
         """
+        cache_key = f"yf:prices:{ticker}:{period}:{interval}"
+        cached = await redis_service.get(cache_key)
+        if cached:
+            logger.info("Serving historical prices from cache", ticker=ticker)
+            return cached
+
         try:
             logger.info("Fetching historical prices from yfinance", ticker=ticker, period=period)
             ticker_obj = yf.Ticker(ticker)
-            history = ticker_obj.history(period=period, interval=interval)
+            history = await asyncio.to_thread(ticker_obj.history, period=period, interval=interval)
             
             prices = []
             for date, row in history.iterrows():
                 prices.append({
-                    "date": date.to_pydatetime(),
+                    "date": date.strftime("%Y-%m-%d"),
                     "close_price": float(row["Close"]),
                     "volume": float(row["Volume"])
                 })
+            
+            await redis_service.set(cache_key, prices, expire=3600)
             return prices
         except Exception as e:
             logger.error("Failed to fetch historical prices", ticker=ticker, error=str(e))
