@@ -1,5 +1,6 @@
 from datetime import datetime
-from sqlalchemy import Column, JSON
+
+from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
 
@@ -15,14 +16,16 @@ class CompanyBase(SQLModel):
     enterprise_value: float | None = None
     shares_outstanding: float | None = None
     website: str | None = None
-    risk_factors: str | None = Field(default=None, sa_column=Column(JSON)) # Use JSON/TEXT for large blocks
+    risk_factors: str | None = Field(
+        default=None, sa_column=Column(JSON)
+    )  # Use JSON/TEXT for large blocks
     business_summary: str | None = None
     mda_summary: str | None = None
     latest_filing_url: str | None = None
     is_ingested: bool = Field(default=False)
 
 
-class Company(CompanyBase, table=True):
+class Company(CompanyBase, table=True):  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -30,36 +33,36 @@ class Company(CompanyBase, table=True):
     # Note: Relationships can be added here once we have the other models defined.
 
 
-class FinancialStatement(SQLModel, table=True):
+class FinancialStatement(SQLModel, table=True):  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     company_id: int = Field(foreign_key="company.id", index=True)
     fiscal_year: int = Field(index=True)
     period: str = Field(default="FY")  # FY (Full Year), Q1, Q2, etc.
-    
+
     # Key Metrics (Explicit fields for easy querying)
     revenue: float | None = None
     net_income: float | None = None
     total_assets: float | None = None
     total_liabilities: float | None = None
     operating_cash_flow: float | None = None
-    
+
     # Store everything else in a dictionary (will be JSON in Postgres)
     all_metrics: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    
+
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-class StockPrice(SQLModel, table=True):
+class StockPrice(SQLModel, table=True):  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     company_id: int = Field(foreign_key="company.id", index=True)
     date: datetime = Field(index=True)
     close_price: float
     volume: float | None = None
-    
+
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-class Competitor(SQLModel, table=True):
+class Competitor(SQLModel, table=True):  # type: ignore
     # ... (existing Competitor model)
     id: int | None = Field(default=None, primary_key=True)
     company_id: int = Field(foreign_key="company.id")
@@ -70,33 +73,34 @@ class Competitor(SQLModel, table=True):
     # company: Company = Relationship(back_populates="competitors")
 
 
-class ForecastScenario(SQLModel, table=True):
+class ForecastScenario(SQLModel, table=True):  # type: ignore
     """
     Stores financial projections and DCF valuation results for a specific scenario.
     """
+
     id: int | None = Field(default=None, primary_key=True)
     company_id: int = Field(foreign_key="company.id", index=True)
     scenario_type: str = Field(index=True)  # BASE, BULL, BEAR
-    
+
     # Assumptions used for this scenario
     revenue_growth: float
     ebitda_margin: float
     terminal_growth: float = 0.02
     wacc: float = 0.08
-    
+
     # Projections (list of dicts containing projected metrics for each year)
     # Example: [{"year": 2025, "revenue": 100, "ebitda": 20, "fcf": 15}, ...]
     projections: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
-    
+
     # Valuation results
     intrinsic_value: float | None = None
     enterprise_value: float | None = None
     equity_value: float | None = None
-    
+
     # RAG Context & Reasoning
     assumptions_reasoning: str | None = Field(default=None, sa_column=Column(JSON))
     modeling_thoughts: str | None = Field(default=None, sa_column=Column(JSON))
     data_sources: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     is_fallback: bool = Field(default=False)
-    
+
     updated_at: datetime = Field(default_factory=datetime.utcnow)

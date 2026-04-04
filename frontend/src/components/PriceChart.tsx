@@ -1,13 +1,13 @@
 "use client";
 
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
 import { format } from "date-fns";
 
@@ -43,20 +43,20 @@ export const PriceChart = ({ data, ticker }: PriceChartProps) => {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-          <XAxis 
-            dataKey="formattedDate" 
-            tick={{ fontSize: 10 }} 
+          <XAxis
+            dataKey="formattedDate"
+            tick={{ fontSize: 10 }}
             tickLine={false}
             axisLine={false}
             minTickGap={30}
           />
-          <YAxis 
-            tick={{ fontSize: 10 }} 
+          <YAxis
+            tick={{ fontSize: 10 }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `$${value}`}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
             labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
           />

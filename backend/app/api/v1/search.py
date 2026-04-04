@@ -1,4 +1,3 @@
-
 import structlog
 from fastapi import APIRouter, HTTPException, Query
 
@@ -22,6 +21,4 @@ async def search_companies(
         return results
     except Exception as e:
         logger.error("Search endpoint failed", query=q, error=str(e))
-        raise HTTPException(
-            status_code=500, detail="Internal server error during search"
-        ) from e
+        raise HTTPException(status_code=500, detail="Internal server error during search") from e
