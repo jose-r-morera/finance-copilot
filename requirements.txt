@@ -65,4 +65,4 @@ sentence-transformers>=3.0,<4.0
 torch>=2.2,<3.0 --index-url https://download.pytorch.org/whl/cpu # Default to CPU for safe builds, GPU can be enabled via environment.
 
 # --- Image Processing ---
-Pillow>=10.0,<11.0
+Pillow>=11.0.0
