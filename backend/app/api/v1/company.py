@@ -1,5 +1,6 @@
-import structlog
 from typing import Any
+
+import structlog
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
 
@@ -59,9 +60,9 @@ async def get_company_analysis(
         ).all()
 
         # 4. Get Competitors
-        competitors_list: list[Any] = list(session.exec(
-            select(Competitor).where(Competitor.company_id == company.id)
-        ).all())
+        competitors_list: list[Any] = list(
+            session.exec(select(Competitor).where(Competitor.company_id == company.id)).all()
+        )
 
         # If no explicit competitors, find peers in same industry
         if not competitors_list:
