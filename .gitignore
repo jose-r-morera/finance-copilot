@@ -40,13 +40,18 @@ ENV/
 secrets/
 
 # ----- Data (large / auto-generated) ----------------------------------------
+*.db
+*.sqlite
+*.sqlite3
 data/raw/
 data/cache/
 data/processed/
+backend/static/logos/
 # keep the gitkeep stubs
 !data/raw/.gitkeep
 !data/cache/.gitkeep
 !data/processed/.gitkeep
+!backend/static/logos/.gitkeep
 
 # ----- Node / Frontend -------------------------------------------------------
 node_modules/

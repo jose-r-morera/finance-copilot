@@ -37,7 +37,7 @@ graph TD
     Director --> |3. Advise| Advisory[Advisory Agent]
     Advisory --> |Strategic Options| Director
     Director --> |4. Finalize| Output[Structured Report / UI]
-    
+
     subgraph "State & Memory"
         Director <--> Redis[(Redis Checkpointer)]
     end
@@ -127,23 +127,23 @@ See [WORKPLAN.md](WORKPLAN.md) for a detailed phased breakdown of the hackathon 
 ---
 
 ## ⚠️ Limitations & Data Notes
- 
+
  - **Latency**: Real-time ticker processing takes 1-2 minutes due to multi-agent reasoning depth.
  - **SEC Availability**: EDGAR filings are subject to SEC rate limits; the Ingestion Agent handles retries gracefully.
  - **Model Uncertainty**: Financial forecasts are mathematical extrapolations and do not account for black-swan events.
- 
+
  ---
- 
+
  ## 📚 Reputable Data Sources
-  
+
   - **SEC EDGAR**: [Official Filings & Disclosure](https://www.sec.gov/edgar/searchedgar/companysearch.html)
   - **Yahoo Finance**: [Market Data & Ratios](https://finance.yahoo.com/)
   - **Bloomberg**: [Financial News & Analysis](https://www.bloomberg.com/)
   - **Reuters**: [Business & Sector News](https://www.reuters.com/business/finance/)
   - **Investor Relations**: *Always consult the primary source for the most accurate and up-to-date information.*
- 
+
  ---
- 
+
  ## 👥 Authors
 - **José Ramón Morera** — [jose-r-morera](https://github.com/jose-r-morera)
 ---
@@ -152,7 +152,7 @@ See [WORKPLAN.md](WORKPLAN.md) for a detailed phased breakdown of the hackathon 
 Finance Copilot uses a **Hybrid Agentic Architecture**:
 - **Ingestion**: Asynchronous workers pull data from yfinance (structured) and SEC EDGAR (unstructured).
 - **Storage**: PostgreSQL handles company state, while ChromaDB stores high-dimensional embeddings.
-- **Reasoning**: A LangGraph "Director" orchestrates Gemini 2.5 Flash to perform RAG-driven modeling. 
+- **Reasoning**: A LangGraph "Director" orchestrates Gemini 2.5 Flash to perform RAG-driven modeling.
 - **Transparency**: Unlike black-box models, we cite every assumption with clickable SEC filing links and "Analyst Thoughts" logs.
 
 ---

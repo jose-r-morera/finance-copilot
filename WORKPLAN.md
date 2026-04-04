@@ -1,6 +1,6 @@
 # WORKPLAN: finance-copilot
 
-This workplan outlines the development of an agentic corporate finance autopilot. 
+This workplan outlines the development of an agentic corporate finance autopilot.
 **Relational DB (PostgreSQL)**: Stores structured financials, company metadata, and saved forecast scenarios.
 **Vector DB (Chroma)**: Stores embedded text from SEC filings and transcripts for Retrieval-Augmented Generation (RAG).
 

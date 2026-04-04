@@ -1,4 +1,3 @@
-
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -28,18 +27,21 @@ class Settings(BaseSettings):
                 f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
             )
         elif self.DATABASE_URL.startswith("postgresql://"):
-            self.DATABASE_URL = self.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
-        
-        # If running locally (not in Docker), 'db' won't resolve. 
+            self.DATABASE_URL = self.DATABASE_URL.replace(
+                "postgresql://", "postgresql+psycopg://", 1
+            )
+
+        # If running locally (not in Docker), 'db' won't resolve.
         # Check if we should override 'db' with 'localhost'
         import os
+
         if "postgresql+psycopg://postgres" in self.DATABASE_URL and "@db" in self.DATABASE_URL:
             # We are likely using the default dev URL from .env, but running outside Docker
             # This is a heuristic: if we are in the agent environment, we should try localhost
             # We can check for a 'DOCKER_CONTAINER' env var or similar.
             if not os.path.exists("/.dockerenv"):
                 self.DATABASE_URL = self.DATABASE_URL.replace("@db", "@localhost")
-                
+
         return self
 
     # --- Redis ---
@@ -54,7 +56,7 @@ class Settings(BaseSettings):
     ALPHA_VANTAGE_API_KEY: str | None = None
     FMP_API_KEY: str | None = None
     SEC_EDGAR_USER_AGENT: str = "finance-copilot contact@example.com"
-    EMBEDDING_PROVIDER: str = "local"               # local | google | openai
+    EMBEDDING_PROVIDER: str = "local"  # local | google | openai
     GEMINI_EMBEDDING_MODEL: str = "models/gemini-embedding-2-preview"
     LOCAL_EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"  # Fast, efficient local model
 
