@@ -25,11 +25,11 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     setShowReport(true); // Move to dashboard immediately
-    
+
     try {
       const response = await fetch(`http://localhost:8000/api/v1/company/${tickerSymbol}/analysis`);
       const data = await response.json();
-      
+
       if (data.status === "ready") {
         setAnalysisData(data);
       } else if (data.status === "processing") {
@@ -107,12 +107,12 @@ export default function Home() {
             <div className="flex items-center gap-6">
               {analysisData?.company?.logo_url && (
                 <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-900 shadow-xl p-2 border border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={analysisData.company.logo_url.startsWith('http') 
-                      ? analysisData.company.logo_url 
-                      : `http://localhost:8000${analysisData.company.logo_url}`} 
-                    alt={ticker} 
-                    className="max-w-full max-h-full object-contain" 
+                  <img
+                    src={analysisData.company.logo_url.startsWith('http')
+                      ? analysisData.company.logo_url
+                      : `http://localhost:8000${analysisData.company.logo_url}`}
+                    alt={ticker}
+                    className="max-w-full max-h-full object-contain"
                   />
                 </div>
               )}
@@ -135,9 +135,9 @@ export default function Home() {
                     </span>
                   )}
                   {analysisData?.company?.website && (
-                    <a 
-                      href={analysisData.company.website} 
-                      target="_blank" 
+                    <a
+                      href={analysisData.company.website}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-finance-500"
                     >
@@ -152,7 +152,7 @@ export default function Home() {
                 )}
               </div>
             </div>
-            <button 
+            <button
               onClick={() => { setShowReport(false); setAnalysisData(null); }}
               className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
             >
@@ -185,14 +185,14 @@ export default function Home() {
                   ) : (
                     <>
                       <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                        {isBriefExpanded 
-                          ? analysisData?.company?.description 
-                          : (analysisData?.company?.description?.length > 300 
-                              ? `${analysisData.company.description.substring(0, 300)}...` 
+                        {isBriefExpanded
+                          ? analysisData?.company?.description
+                          : (analysisData?.company?.description?.length > 300
+                              ? `${analysisData.company.description.substring(0, 300)}...`
                               : analysisData?.company?.description) || "Description not available."}
                       </p>
                       {analysisData?.company?.description?.length > 300 && (
-                        <button 
+                        <button
                           onClick={() => setIsBriefExpanded(!isBriefExpanded)}
                           className="mt-2 text-[10px] font-bold text-finance-500 hover:text-finance-600 uppercase tracking-wider flex items-center gap-1"
                         >

@@ -25,7 +25,7 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                 if (isMounted) setLoading(false);
                 return;
             }
-            
+
             let shouldWait = false;
             try {
                 const response = await fetch(`http://localhost:8000/api/v1/modeling/${ticker}/forecast`);
@@ -33,7 +33,7 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                     const result = await response.json();
                     if (isMounted) {
                         setData(result);
-                        
+
                         // If still processing, poll again in 3 seconds
                         if (result.status === "processing") {
                             shouldWait = true;
@@ -41,7 +41,7 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                         }
                     }
                 }
-                
+
                 if (isMounted && !shouldWait) {
                     const sensResponse = await fetch(`http://localhost:8000/api/v1/modeling/${ticker}/sensitivity`);
                     if (sensResponse.ok) {
@@ -88,11 +88,11 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
             const match = part.match(/\[(.*?)\]\((.*?)\)/);
             if (match) {
                 return (
-                    <a 
-                        key={i} 
-                        href={match[2]} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                    <a
+                        key={i}
+                        href={match[2]}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-finance-500 hover:text-finance-600 underline font-medium"
                     >
                         {match[1]}
@@ -130,8 +130,8 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                             key={s}
                             onClick={() => setSelectedScenario(s)}
                             className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                                selectedScenario === s 
-                                ? "bg-white dark:bg-slate-900 text-finance-600 shadow-sm" 
+                                selectedScenario === s
+                                ? "bg-white dark:bg-slate-900 text-finance-600 shadow-sm"
                                 : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                             }`}
                         >
@@ -178,7 +178,7 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F020" />
                             <XAxis dataKey="year" fontSize={11} tickLine={false} axisLine={false} />
                             <YAxis fontSize={11} tickLine={false} axisLine={false} tickFormatter={(val) => `$${(val / 1e9).toFixed(1)}B`} />
-                            <Tooltip 
+                            <Tooltip
                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                                 formatter={(val: any) => [`$${(val / 1e9).toFixed(2)}B`, ""]}
                             />
@@ -259,10 +259,10 @@ export const ForecastView = ({ ticker }: { ticker: string }) => {
                                     </p>
                                     <div className="flex flex-wrap gap-2 mt-1">
                                         {currentScenario.data_sources.map((url: string, idx: number) => (
-                                            <a 
-                                                key={idx} 
-                                                href={url} 
-                                                target="_blank" 
+                                            <a
+                                                key={idx}
+                                                href={url}
+                                                target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="px-2 py-0.5 bg-white dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700 text-[9px] font-bold hover:border-finance-300 hover:text-finance-600 transition-all text-slate-500"
                                             >

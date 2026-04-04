@@ -116,8 +116,8 @@ export function SearchBox({ onSelect, disabled }: SearchBoxProps) {
               key={company.ticker}
               className={cn(
                 "w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center justify-between group/item",
-                selectedIndex === index 
-                  ? "bg-finance-500 text-white shadow-lg" 
+                selectedIndex === index
+                  ? "bg-finance-500 text-white shadow-lg"
                   : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
               )}
               onClick={() => {
