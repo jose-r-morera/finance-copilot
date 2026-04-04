@@ -1,5 +1,6 @@
 import structlog
 import torch
+from typing import Any
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
@@ -16,16 +17,18 @@ class EmbeddingService:
     """
 
     def __init__(self) -> None:
+        self.embeddings: Any
+
         provider = settings.EMBEDDING_PROVIDER.lower()
         logger.info("Initializing Embedding Service", provider=provider)
 
         if provider == "google" and settings.GOOGLE_API_KEY:
-            self.embeddings = GoogleGenerativeAIEmbeddings(
-                model=settings.GEMINI_EMBEDDING_MODEL, google_api_key=settings.GOOGLE_API_KEY
+            self.embeddings = GoogleGenerativeAIEmbeddings(  # type: ignore[assignment]
+                model=settings.GEMINI_EMBEDDING_MODEL, google_api_key=settings.GOOGLE_API_KEY  # type: ignore[arg-type]
             )
         elif provider == "openai" and settings.OPENAI_API_KEY:
-            self.embeddings = OpenAIEmbeddings(
-                model="text-embedding-3-small", api_key=settings.OPENAI_API_KEY
+            self.embeddings = OpenAIEmbeddings(  # type: ignore[assignment]
+                model="text-embedding-3-small", api_key=settings.OPENAI_API_KEY  # type: ignore[arg-type]
             )
         else:
             # Local Embedding (Fast, Free, Private)

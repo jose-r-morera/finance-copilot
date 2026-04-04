@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 
 import httpx
 import structlog
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from PIL import Image
 
 logger = structlog.get_logger(__name__)
@@ -72,7 +72,7 @@ class ImageScraperService:
 
             # Ensure RGBA for transparency handling
             if img.mode != "RGBA":
-                img = img.convert("RGBA")
+                img = img.convert("RGBA")  # type: ignore[assignment]
 
             # 1. Aggressive Trim
             # Strategy: Convert to grayscale and threshold to isolate non-white content
@@ -113,7 +113,7 @@ class ImageScraperService:
                     min(img.width, bbox[2] + 2),
                     min(img.height, bbox[3] + 2),
                 )
-                img = img.crop(bbox)
+                img = img.crop(bbox)  # type: ignore[assignment]
 
             # 2. Add Aesthetic Padding (12.5%) and make square
             width, height = img.size
@@ -232,13 +232,13 @@ class ImageScraperService:
 
                     # 1. og:image
                     og_image = soup.find("meta", property="og:image")
-                    if og_image and og_image.get("content"):
-                        return urljoin(website_url, og_image["content"])
+                    if isinstance(og_image, Tag) and og_image.get("content"):
+                        return str(urljoin(website_url, str(og_image.get("content"))))
 
                     # 2. apple-touch-icon
                     apple_icon = soup.find("link", rel="apple-touch-icon")
-                    if apple_icon and apple_icon.get("href"):
-                        return urljoin(website_url, apple_icon["href"])
+                    if isinstance(apple_icon, Tag) and apple_icon.get("href"):
+                        return str(urljoin(website_url, str(apple_icon.get("href"))))
 
             # 5. Last Resort Scraping-style API (Google Favicon)
             domain = website_url.replace("https://", "").replace("http://", "").split("/")[0]

@@ -1,4 +1,5 @@
 import structlog
+from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
 
@@ -49,28 +50,28 @@ async def get_company_analysis(
         financials = session.exec(
             select(FinancialStatement)
             .where(FinancialStatement.company_id == company.id)
-            .order_by(FinancialStatement.fiscal_year)
+            .order_by(FinancialStatement.fiscal_year)  # type: ignore[arg-type]
         ).all()
 
         # 3. Get Stock Price History
         prices = session.exec(
-            select(StockPrice).where(StockPrice.company_id == company.id).order_by(StockPrice.date)
+            select(StockPrice).where(StockPrice.company_id == company.id).order_by(StockPrice.date)  # type: ignore[arg-type]
         ).all()
 
         # 4. Get Competitors
-        competitors = session.exec(
+        competitors_list: list[Any] = list(session.exec(
             select(Competitor).where(Competitor.company_id == company.id)
-        ).all()
+        ).all())
 
         # If no explicit competitors, find peers in same industry
-        if not competitors:
+        if not competitors_list:
             peers = session.exec(
                 select(Company)
                 .where(Company.industry == company.industry)
                 .where(Company.id != company.id)
                 .limit(5)
             ).all()
-            competitors = [
+            competitors_list = [
                 {"peer_ticker": p.ticker, "peer_name": p.name, "market_cap": p.market_cap}
                 for p in peers
             ]
@@ -87,7 +88,7 @@ async def get_company_analysis(
             "financials": financials,
             "prices": prices,
             "sec_insights": sec_insights,
-            "competitors": competitors,
+            "competitors": competitors_list,
         }
 
     except Exception as e:

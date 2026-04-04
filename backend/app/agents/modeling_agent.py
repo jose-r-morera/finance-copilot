@@ -1,4 +1,5 @@
 import json
+from typing import Sequence
 
 import openai
 import structlog
@@ -150,26 +151,26 @@ class ModelingAgent:
             if settings.PRIMARY_LLM_PROVIDER == "google" and settings.GOOGLE_API_KEY:
                 llm = ChatGoogleGenerativeAI(
                     model="gemini-2.5-flash",
-                    google_api_key=settings.GOOGLE_API_KEY,
+                    google_api_key=settings.GOOGLE_API_KEY,  # type: ignore[call-arg]
                     temperature=0.1,
                     convert_system_message_to_human=True,
                 )
                 # Gemini often works better with a direct prompt than
                 # system/human split for structured JSON
-                response = await llm.ainvoke(
+                response_json = await llm.ainvoke(
                     [HumanMessage(content=prompt + "\n\nIMPORTANT: Return ONLY valid JSON.")]
                 )
-                return json.loads(response.content)
+                return json.loads(str(response_json.content))
 
             # 2. Try OpenAI as default or explicit choice
             elif settings.OPENAI_API_KEY:
                 client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-                response = await client.chat.completions.create(
+                response_chat = await client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
                     response_format={"type": "json_object"},
                 )
-                return json.loads(response.choices[0].message.content)
+                return json.loads(str(response_chat.choices[0].message.content))
 
             else:
                 # Fallback to defaults
@@ -212,7 +213,7 @@ class ModelingAgent:
                 },
             }
 
-    def _calculate_historical_averages(self, financials: list[FinancialStatement]) -> dict:
+    def _calculate_historical_averages(self, financials: Sequence[FinancialStatement]) -> dict:
         """
         Derives average growth rates and margins from historical data.
         """

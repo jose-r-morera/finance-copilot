@@ -90,8 +90,8 @@ class YFinanceService:
                 df: pd.DataFrame, labels: list[str], current_date: pd.Timestamp
             ) -> float | None:
                 for label in labels:
-                    if label in df.index and not pd.isna(df.loc[label, current_date]):
-                        return float(df.loc[label, current_date])
+                    if label in df.index and not pd.isna(df.loc[label, current_date]):  # type: ignore[index]
+                        return float(df.loc[label, current_date])  # type: ignore[index, arg-type]
                 return None
 
             for date in years:
